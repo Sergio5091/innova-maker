@@ -7,9 +7,9 @@ import { Button } from "@/components/ui/button"
 import Image from "next/image"
 
 const features = [
-  "●​ Expertise Multi-facettes : Design, Électronique et Fabrication réunis sous un même toit.",
-  "●​ Vitesse d'exécution : Itérations rapides grâce à la fabrication numérique.",
-  "●​ Approche Stratégique : Nous ne créons pas juste des objets, nous créons des solutions viables.",
+  " Expertise Multi-facettes : Design, Électronique et Fabrication réunis sous un même toit.",
+  " Vitesse d'exécution : Itérations rapides grâce à la fabrication numérique.",
+  "​ Approche Stratégique : Nous ne créons pas juste des objets, nous créons des solutions viables.",
 ]
 
 export function AboutSection() {
@@ -43,7 +43,7 @@ export function AboutSection() {
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                 className="absolute -top-6 -right-6 w-24 h-24 bg-primary rounded-2xl flex items-center justify-center shadow-xl shadow-primary/20"
               >
-                <span className="text-4xl font-bold text-primary-foreground">10+</span>
+                <span className="text-4xl font-bold text-primary-foreground">3+</span>
               </motion.div>
               
               <motion.div

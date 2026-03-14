@@ -107,10 +107,7 @@ export default function DomoticsPage() {
                 Domotique
               </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight text-balance">
-                Votre maison{" "}
-                <span className="text-emerald-500">
-                  <TypingText texts={["intelligente", "connectée", "solaire", "sécurisée"]} />
-                </span>
+                <TypingText texts={["L'intelligence artificielle au service de votre habitat"]} />
               </h1>
               <p className="text-lg text-muted-foreground leading-relaxed mb-8">
                 Solutions complètes pour automatiser votre habitat : énergie solaire, gestion énergétique et sécurité connectée pour un confort optimal.

@@ -7,7 +7,6 @@ import { Menu, X, ChevronDown, Cpu, Home, Monitor } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 const navLinks = [
-  { href: "/", label: "Accueil" },
   { href: "/shop", label: "Shop" },
   { href: "/blog", label: "Blog" },
   { href: "/about", label: "À propos" },
@@ -66,28 +65,25 @@ export function Navigation() {
               whileTap={{ scale: 0.95 }}
               className="flex items-center gap-2"
             >
-              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-lg">I</span>
-              </div>
-              <span className="text-xl font-semibold text-foreground">
-                INOVA <span className="text-primary">Makers</span>
-              </span>
+              <img 
+                src="/logo_inova_couleur.svg" 
+                alt="INOVA Makers Logo" 
+                className="w-30 h-20"
+              />
             </motion.div>
           </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors relative group"
-              >
-                {link.label}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
-              </Link>
-            ))}
-            
+            {/* Accueil */}
+            <Link
+              href="/"
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors relative group"
+            >
+              Accueil
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
+            </Link>
+
             {/* Services Dropdown */}
             <div className="relative">
               <button
@@ -137,6 +133,18 @@ export function Navigation() {
                 )}
               </AnimatePresence>
             </div>
+
+            {/* Other links */}
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors relative group"
+              >
+                {link.label}
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
+              </Link>
+            ))}
           </div>
 
           <div className="hidden lg:flex items-center gap-4">

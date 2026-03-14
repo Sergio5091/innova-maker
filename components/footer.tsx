@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { motion } from "framer-motion"
-import { Mail, Phone, MapPin, Linkedin, Twitter, Facebook, Instagram } from "lucide-react"
+import { Mail, Phone, MapPin, Linkedin, Twitter, Facebook, Instagram, Globe } from "lucide-react"
 
 const footerLinks = {
   services: [
@@ -39,15 +39,17 @@ export function Footer() {
           {/* Brand */}
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center gap-2 mb-6">
-              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-lg">I</span>
-              </div>
+              <img 
+                src="/logo_inova_blanc.svg" 
+                alt="INOVA Makers Logo" 
+                className="w-20 h-20"
+              />
               <span className="text-xl font-semibold">
                 INOVA <span className="text-primary">Makers</span>
               </span>
             </Link>
             <p className="text-background/70 mb-6 max-w-sm leading-relaxed">
-              "Vous avez l'idée. Nous avons l'ingénierie." De l'esquisse au prototype fonctionnel, nous matérialisons vos innovations.
+              De l'esquisse au prototype fonctionnel, nous matérialisons vos innovations.
             </p>
             <div className="flex gap-4">
               {socialLinks.map((social) => (
@@ -106,26 +108,37 @@ export function Footer() {
               <li>
                 <a
                   href="mailto:contact@inovamakers.io"
-                  className="flex items-center gap-2 text-background/70 hover:text-primary transition-colors"
+                  className="flex items-center gap-3 text-background/70 hover:text-primary transition-colors"
                 >
-                  <Mail size={16} />
-                  contact@inovamakers.io
+                  <Mail size={18} />
+                  <span>contact@inovamakers.io</span>
                 </a>
               </li>
               <li>
                 <a
                   href="tel:+22944557777"
-                  className="flex items-center gap-2 text-background/70 hover:text-primary transition-colors"
+                  className="flex items-center gap-3 text-background/70 hover:text-primary transition-colors"
                 >
-                  <Phone size={16} />
-                  +229 44 55 77 77
+                  <Phone size={18} />
+                  <span>+229 44 55 77 77</span>
                 </a>
               </li>
               <li>
-                <span className="flex items-center gap-2 text-background/70">
-                  <MapPin size={16} />
-                  Aïmevo - Godomey, Bénin
-                </span>
+                <div className="flex items-center gap-3 text-background/70">
+                  <MapPin size={18} />
+                  <span>Aïmevo - Godomey, Bénin</span>
+                </div>
+              </li>
+              <li>
+                <a
+                  href="https://www.inovamakers.io"
+                  className="flex items-center gap-3 text-background/70 hover:text-primary transition-colors"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Globe size={18} />
+                  <span>www.inovamakers.io</span>
+                </a>
               </li>
             </ul>
           </div>

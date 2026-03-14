@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { ArrowRight } from "lucide-react"
+import { ArrowRight, MapPin, Phone, Globe, Mail } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 
@@ -61,17 +61,21 @@ export function CTASection() {
 
           {/* Contact Info */}
           <div className="flex flex-col sm:flex-row gap-8 justify-center text-center">
-            <div className="text-background/80">
-              <div className="font-semibold">📍 Aïmevo - Godomey</div>
+            <div className="flex items-center justify-center gap-2 text-background/80">
+              <MapPin size={18} />
+              <div className="font-semibold">Aïmevo - Godomey</div>
             </div>
-            <div className="text-background/80">
-              <div className="font-semibold">📞 +229 44557777</div>
+            <div className="flex items-center justify-center gap-2 text-background/80">
+              <Phone size={18} />
+              <div className="font-semibold">+229 44 55 77 77</div>
             </div>
-            <div className="text-background/80">
-              <div className="font-semibold">🌐 www.inovamakers.io</div>
+            <div className="flex items-center justify-center gap-2 text-background/80">
+              <Globe size={18} />
+              <div className="font-semibold">www.inovamakers.io</div>
             </div>
-            <div className="text-background/80">
-              <div className="font-semibold">📧 contact@inovamakers.io</div>
+            <div className="flex items-center justify-center gap-2 text-background/80">
+              <Mail size={18} />
+              <div className="font-semibold">contact@inovamakers.io</div>
             </div>
           </div>
         </motion.div>

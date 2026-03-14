@@ -68,9 +68,11 @@ export function HeroSection() {
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight mb-6 text-balance">
               INOVA Makers
-              <span className="text-primary block text-3xl md:text-4xl lg:text-5xl mt-2">
-                "Vous avez l'idée. Nous avons l'ingénierie."
-              </span>
+                <span className="text-primary block text-3xl md:text-4xl lg:text-5xl mt-2">
+                  "Vous avez l'idée. 
+                  <br />
+                  Nous avons l'ingénierie."
+                </span>
             </h1>
 
             <p className="text-lg md:text-xl text-muted-foreground leading-relaxed mb-10 max-w-xl">
@@ -114,9 +116,9 @@ export function HeroSection() {
               className="mt-16 grid grid-cols-3 gap-8"
             >
               {[
-                { value: 150, suffix: "+", label: "Projets réalisés" },
-                { value: 50, suffix: "+", label: "Clients satisfaits" },
-                { value: 10, suffix: "+", label: "Années d'expérience" },
+                { value: 25, suffix: "+", label: "Clients satisfaits" },
+                { value: 3, suffix: "+", label: "Années d'expérience" },
+                { value: 12, suffix: "+", label: "Projets réalisés" },
               ].map((stat, index) => (
                 <div key={index} className="text-center sm:text-left">
                   <div className="text-2xl md:text-3xl font-bold text-foreground">
@@ -193,7 +195,7 @@ export function HeroSection() {
                   className="w-3 h-3 bg-emerald-500 rounded-full absolute top-2 right-2"
                 />
                 <div className="text-3xl font-bold text-primary">
-                  <AnimatedCounter value={150} suffix="+" />
+                  <AnimatedCounter value={12} suffix="+" />
                 </div>
                 <div className="text-sm text-muted-foreground">Projets</div>
               </motion.div>
@@ -211,7 +213,7 @@ export function HeroSection() {
                   transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
                 />
                 <div className="relative text-sm text-primary-foreground/80">Expertise</div>
-                <div className="relative text-xl font-bold text-primary-foreground">10+ ans</div>
+                <div className="text-xl font-bold text-primary-foreground">3+ ans</div>
               </motion.div>
               
               {/* Pulse Rings */}
