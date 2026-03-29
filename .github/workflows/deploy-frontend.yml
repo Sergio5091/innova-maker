@@ -26,6 +26,9 @@ jobs:
       - name: Build production
         run: npm run build
 
+      - name: List build output
+        run: ls -la && ls -la out/ || echo "out/ not found"
+
       - name: Deploy to VPS via SCP
         uses: appleboy/scp-action@v0.1.7
         with:
