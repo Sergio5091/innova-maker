@@ -13,6 +13,26 @@ export const metadata: Metadata = {
   title: 'INOVA Makers | "Vous avez l\'idée. Nous avons l\'ingénierie."',
   description: "De l'esquisse au prototype fonctionnel, INOVA Makers matérialise vos innovations. Conseil stratégie, conception fabrication et R&D IoT.",
   generator: 'v0.app',
+  openGraph: {
+    title: 'INOVA Makers | "Vous avez l\'idée. Nous avons l\'ingénierie."',
+    description: "De l'esquisse au prototype fonctionnel, INOVA Makers matérialise vos innovations. Conseil stratégie, conception fabrication et R&D IoT.",
+    type: 'website',
+    siteName: 'INOVA Makers',
+    images: [
+      {
+        url: '/logo_inova_couleur.svg',
+        width: 1200,
+        height: 630,
+        alt: 'INOVA Makers',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'INOVA Makers | "Vous avez l\'idée. Nous avons l\'ingénierie."',
+    description: "De l'esquisse au prototype fonctionnel, INOVA Makers matérialise vos innovations. Conseil stratégie, conception fabrication et R&D IoT.",
+    images: ['/logo_inova_couleur.svg'],
+  },
   icons: {
     icon: [
       {
