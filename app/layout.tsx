@@ -12,7 +12,6 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: 'INOVA Makers | "Vous avez l\'idée. Nous avons l\'ingénierie."',
   description: "De l'esquisse au prototype fonctionnel, INOVA Makers matérialise vos innovations. Conseil stratégie, conception fabrication et R&D IoT.",
-  generator: 'v0.app',
   openGraph: {
     title: 'INOVA Makers | "Vous avez l\'idée. Nous avons l\'ingénierie."',
     description: "De l'esquisse au prototype fonctionnel, INOVA Makers matérialise vos innovations. Conseil stratégie, conception fabrication et R&D IoT.",
@@ -34,21 +33,8 @@ export const metadata: Metadata = {
     images: ['/logo_inova_couleur.svg'],
   },
   icons: {
-    icon: [
-      {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
-    ],
-    apple: '//logo_inova_couleur.svg',
+    icon: '/logo_inova_couleur.svg',
+    apple: '/logo_inova_couleur.svg',
   },
 }
 
