@@ -67,7 +67,7 @@ export function HeroSection() {
             </motion.div>
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight mb-6 text-balance">
-              INOVA Makersssssss
+              INOVA Makers
                 <span className="text-primary block text-3xl md:text-4xl lg:text-5xl mt-2">
                   "Vous avez l'idée. 
                   <br />

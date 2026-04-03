@@ -1,0 +1,44 @@
+{
+  "name": "inovamakers-backend",
+  "version": "1.0.0",
+  "description": "Backend API pour la boutique e-commerce INOVA Makers",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
+    "test": "jest",
+    "db:migrate": "node src/scripts/migrate.js",
+    "db:seed": "node src/scripts/seed.js",
+    "db:reset": "npm run db:migrate && npm run db:seed"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "mysql",
+    "api",
+    "ecommerce",
+    "inovamakers"
+  ],
+  "author": "INOVA Makers",
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.3.2",
+    "express-validator": "^7.3.1",
+    "helmet": "^8.1.0",
+    "joi": "^18.1.2",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.1.1",
+    "mysql2": "^3.20.0",
+    "nodemailer": "^8.0.4"
+  },
+  "devDependencies": {
+    "jest": "^30.3.0",
+    "nodemon": "^3.1.14",
+    "supertest": "^7.2.2"
+  }
+}
