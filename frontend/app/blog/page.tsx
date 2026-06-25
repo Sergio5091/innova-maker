@@ -174,9 +174,10 @@ export default function BlogPage() {
                         transition={{ delay: index * 0.1, duration: 0.5 }}
                         className="group bg-background rounded-2xl border border-border overflow-hidden hover:border-primary/30 hover:shadow-xl transition-all"
                       >
+                        <Link href={`/blog/${article.slug}`} className="block">
                         <div className="aspect-video bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center overflow-hidden">
                           {article.featured_image ? (
-                            <img src={article.featured_image} alt={article.title} className="w-full h-full object-cover" />
+                            <img src={article.featured_image} alt={article.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                           ) : (
                             <div className="text-center">
                               <Tag className="w-12 h-12 text-primary mx-auto mb-2" />
@@ -212,6 +213,7 @@ export default function BlogPage() {
                             </span>
                           </div>
                         </div>
+                        </Link>
                       </motion.article>
                     ))}
                   </div>
@@ -230,6 +232,7 @@ export default function BlogPage() {
                         transition={{ delay: index * 0.05, duration: 0.5 }}
                         className="group bg-background rounded-2xl border border-border p-6 hover:border-primary/30 hover:shadow-xl transition-all"
                       >
+                        <Link href={`/blog/${article.slug}`} className="block">
                         <div className="flex items-center gap-2 mb-4">
                           <span className="px-3 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full">
                             {article.category_name}
@@ -248,6 +251,7 @@ export default function BlogPage() {
                             Lire <ArrowRight className="w-3 h-3" />
                           </span>
                         </div>
+                        </Link>
                       </motion.article>
                     ))}
                   </div>

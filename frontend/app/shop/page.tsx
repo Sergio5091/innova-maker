@@ -189,6 +189,7 @@ export default function ShopPage() {
                       transition={{ delay: index * 0.05, duration: 0.5 }}
                       className="group bg-background rounded-2xl border border-border overflow-hidden hover:border-primary/30 hover:shadow-xl transition-all"
                     >
+                      <Link href={`/shop/${product.slug}`} className="block">
                       {/* Image */}
                       <div className="relative aspect-square bg-secondary/50 flex items-center justify-center overflow-hidden">
                         {product.badge && (
@@ -243,13 +244,12 @@ export default function ShopPage() {
                               {product.currency || "FCFA"}
                             </span>
                           </div>
-                          <Link href="/quote">
-                            <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                              <ShoppingCart className="w-4 h-4" />
-                            </Button>
-                          </Link>
+                          <div className="p-2 bg-primary/10 rounded-lg group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                            <ShoppingCart className="w-4 h-4 text-primary group-hover:text-primary-foreground" />
+                          </div>
                         </div>
                       </div>
+                      </Link>
                     </motion.div>
                   )
                 })}
