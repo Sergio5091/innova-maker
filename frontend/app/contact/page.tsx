@@ -7,6 +7,9 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { api } from "@/lib/api"
 
+import { Navigation } from "@/components/navigation"
+import { Footer } from "@/components/footer"
+
 export default function ContactPage() {
   const [formData, setFormData] = useState({
     name: "",
@@ -40,6 +43,7 @@ export default function ContactPage() {
 
   return (
     <main className="min-h-screen">
+      <Navigation />
       <section className="py-24 lg:py-32 bg-secondary/30">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <motion.div
@@ -226,6 +230,7 @@ export default function ContactPage() {
           </div>
         </div>
       </section>
+      <Footer />
     </main>
   )
 }

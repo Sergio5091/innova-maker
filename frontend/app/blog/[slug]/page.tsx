@@ -151,14 +151,27 @@ export default function ArticleDetailPage() {
 
             {/* Contenu */}
             {article.content && (
-              <div className="prose prose-lg max-w-none text-foreground leading-relaxed space-y-4">
-                {article.content.split("\n").filter(Boolean).map((para: string, i: number) => (
-                  <p key={i} className="text-foreground/90 leading-relaxed">
-                    {para}
-                  </p>
-                ))}
-              </div>
+              <div
+                className="prose prose-lg max-w-none text-foreground leading-relaxed tiptap-content"
+                dangerouslySetInnerHTML={{ __html: article.content }}
+              />
             )}
+
+            <style>{`
+              .tiptap-content h1 { font-size: 1.875rem; font-weight: 700; margin: 1.5rem 0 0.75rem; }
+              .tiptap-content h2 { font-size: 1.5rem; font-weight: 600; margin: 1.25rem 0 0.75rem; }
+              .tiptap-content h3 { font-size: 1.25rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+              .tiptap-content p { margin: 0.75rem 0; line-height: 1.8; }
+              .tiptap-content ul { list-style: disc; padding-left: 1.5rem; margin: 0.75rem 0; }
+              .tiptap-content ol { list-style: decimal; padding-left: 1.5rem; margin: 0.75rem 0; }
+              .tiptap-content li { margin: 0.25rem 0; }
+              .tiptap-content blockquote { border-left: 4px solid hsl(var(--primary)); padding-left: 1rem; margin: 1rem 0; color: hsl(var(--muted-foreground)); font-style: italic; }
+              .tiptap-content hr { border: none; border-top: 1px solid hsl(var(--border)); margin: 1.5rem 0; }
+              .tiptap-content img { max-width: 100%; height: auto; border-radius: 0.75rem; margin: 1rem 0; }
+              .tiptap-content strong { font-weight: 700; }
+              .tiptap-content em { font-style: italic; }
+              .tiptap-content s { text-decoration: line-through; }
+            `}</style>
           </motion.article>
 
           {/* Retour */}

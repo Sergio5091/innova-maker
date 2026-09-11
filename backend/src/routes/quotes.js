@@ -10,7 +10,7 @@ const quoteSchema = z.object({
   email: z.string().email('Email invalide'),
   phone: z.string().min(6).max(20),
   company: z.string().max(255).optional(),
-  service_id: z.number().int().positive().optional(),
+  service_id: z.number().int().positive().nullable().optional(),
   project_type: z.string().max(100).optional(),
   budget: z.string().max(100).optional(),
   timeline: z.string().max(100).optional(),

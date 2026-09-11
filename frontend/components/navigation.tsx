@@ -148,12 +148,16 @@ export function Navigation() {
           </div>
 
           <div className="hidden lg:flex items-center gap-4">
-            <Button variant="ghost" size="sm">
-              Contact
-            </Button>
-            <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground">
-              Demander un devis
-            </Button>
+            <Link href="/contact">
+              <Button variant="ghost" size="sm">
+                Contact
+              </Button>
+            </Link>
+            <Link href="/quote">
+              <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                Demander un devis
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -216,12 +220,14 @@ export function Navigation() {
                 </motion.div>
               ))}
               <div className="pt-4 flex flex-col gap-3">
-                <Button variant="outline" className="w-full">
-                  Contact
-                </Button>
-                <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
-                  Demander un devis
-                </Button>
+                <Link href="/contact" onClick={() => setIsOpen(false)}>
+                  <Button variant="outline" className="w-full">Contact</Button>
+                </Link>
+                <Link href="/quote" onClick={() => setIsOpen(false)}>
+                  <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
+                    Demander un devis
+                  </Button>
+                </Link>
               </div>
             </div>
           </motion.div>

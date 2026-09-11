@@ -5,9 +5,25 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Search, Filter, Trash2, Eye, X, Mail, Phone, Building, MessageSquare } from "lucide-react"
 import { api } from "@/lib/api"
 
-const statusOptions = ["", "new", "read", "replied", "closed"]
-const typeOptions = ["", "general", "support", "partnership", "complaint"]
-const priorityOptions = ["low", "medium", "high"]
+const statusOptions = [
+  { value: "new", label: "Nouveau" },
+  { value: "read", label: "Lu" },
+  { value: "replied", label: "Répondu" },
+  { value: "closed", label: "Clôturé" },
+]
+
+const typeOptions = [
+  { value: "general", label: "Général" },
+  { value: "support", label: "Support" },
+  { value: "partnership", label: "Partenariat" },
+  { value: "complaint", label: "Réclamation" },
+]
+
+const priorityOptions = [
+  { value: "low", label: "Faible" },
+  { value: "medium", label: "Moyenne" },
+  { value: "high", label: "Élevée" },
+]
 
 const statusColors: Record<string, string> = {
   new: "bg-blue-500/10 text-blue-600 border-blue-200",
@@ -19,6 +35,9 @@ const statusColors: Record<string, string> = {
 const typeLabels: Record<string, string> = {
   general: "Général", support: "Support", partnership: "Partenariat", complaint: "Réclamation"
 }
+
+const getLabel = (options: { value: string; label: string }[], value: string) =>
+  options.find(o => o.value === value)?.label || value
 
 export default function ContactsPage() {
   const [contacts, setContacts] = useState<any[]>([])
@@ -86,12 +105,12 @@ export default function ContactsPage() {
         <select value={filters.status} onChange={(e) => setFilters({ ...filters, status: e.target.value, page: 1 })}
           className="px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:border-primary">
           <option value="">Tous les statuts</option>
-          {statusOptions.slice(1).map(s => <option key={s} value={s}>{s}</option>)}
+          {statusOptions.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
         </select>
         <select value={filters.type} onChange={(e) => setFilters({ ...filters, type: e.target.value, page: 1 })}
           className="px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:border-primary">
           <option value="">Tous les types</option>
-          {typeOptions.slice(1).map(t => <option key={t} value={t}>{typeLabels[t]}</option>)}
+          {typeOptions.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
         </select>
       </div>
 
@@ -125,12 +144,12 @@ export default function ContactsPage() {
                   <td className="px-4 py-3 max-w-[200px] truncate text-foreground">{c.subject}</td>
                   <td className="px-4 py-3">
                     <span className="px-2 py-0.5 bg-secondary text-muted-foreground rounded-full text-xs">
-                      {typeLabels[c.type] || c.type}
+                      {getLabel(typeOptions, c.type)}
                     </span>
                   </td>
                   <td className="px-4 py-3">
                     <span className={`px-2 py-0.5 rounded-full text-xs border ${statusColors[c.status] || ""}`}>
-                      {c.status}
+                      {getLabel(statusOptions, c.status)}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-xs text-muted-foreground">
@@ -205,7 +224,7 @@ export default function ContactsPage() {
                     <select value={selected.status}
                       onChange={(e) => handlePatch(selected.id, { status: e.target.value })}
                       className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:border-primary">
-                      {statusOptions.slice(1).map(s => <option key={s} value={s}>{s}</option>)}
+                      {statusOptions.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
                     </select>
                   </div>
                   <div className="flex-1">
@@ -213,7 +232,7 @@ export default function ContactsPage() {
                     <select value={selected.priority}
                       onChange={(e) => handlePatch(selected.id, { priority: e.target.value })}
                       className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:border-primary">
-                      {priorityOptions.map(p => <option key={p} value={p}>{p}</option>)}
+                      {priorityOptions.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
                     </select>
                   </div>
                 </div>

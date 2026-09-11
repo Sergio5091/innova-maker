@@ -80,21 +80,22 @@ export default function NewProductPage() {
   }
 
   const uploadImage = async (file: File, targetIndex: number) => {
-    // 1. Preview immédiat via blob
-    const blobUrl = URL.createObjectURL(file)
-    blobUrls.current.push(blobUrl)
+    // Preview via FileReader (data URL, compatible Edge/Chrome)
+    const reader = new FileReader()
+    reader.onload = (ev) => {
+      if (ev.target?.result) {
+        setForm((prev) => {
+          const images = [...prev.images]
+          images[targetIndex] = ev.target!.result as string
+          return { ...prev, images }
+        })
+      }
+    }
+    reader.readAsDataURL(file)
 
-    setForm((prev) => {
-      const images = [...prev.images]
-      images[targetIndex] = blobUrl
-      return { ...prev, images }
-    })
     setUploadingIndexes((prev) => [...prev, targetIndex])
-
     try {
-      // 2. Upload Cloudinary
       const cloudUrl = await uploadToCloudinary(file)
-      // 3. Remplace le blob par l'URL Cloudinary
       setForm((prev) => {
         const images = [...prev.images]
         images[targetIndex] = cloudUrl
@@ -102,7 +103,6 @@ export default function NewProductPage() {
       })
     } catch (err) {
       setError("Erreur upload image")
-      // Retire l'image en cas d'erreur
       setForm((prev) => ({
         ...prev,
         images: prev.images.filter((_, i) => i !== targetIndex),

@@ -125,4 +125,16 @@
   html {
     scroll-behavior: smooth;
   }
+
+  /* Cursor pointer sur tous les éléments interactifs */
+  button,
+  a,
+  [role="button"],
+  input[type="submit"],
+  input[type="button"],
+  input[type="reset"],
+  label[for],
+  select {
+    cursor: pointer;
+  }
 }

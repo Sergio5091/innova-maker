@@ -1,11 +1,12 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { ArrowLeft, Loader2, Plus, X, Upload, ImagePlus } from "lucide-react"
+import { ArrowLeft, Loader2, Upload, ImagePlus, X } from "lucide-react"
 import { api } from "@/lib/api"
 import { Button } from "@/components/ui/button"
+import { RichEditor } from "@/components/ui/rich-editor"
 
 const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME!
 const UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!
@@ -19,7 +20,7 @@ async function uploadToCloudinary(file: File): Promise<string> {
     method: "POST",
     body: formData,
   })
-  if (!res.ok) throw new Error("Échec de l'upload image")
+  if (!res.ok) throw new Error("Échec upload")
   const data = await res.json()
   return data.secure_url
 }
@@ -44,12 +45,16 @@ export default function NewArticlePage() {
   const [categories, setCategories] = useState<any[]>([])
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState("")
-  const [uploadingImage, setUploadingImage] = useState(false)
+  const [uploadingCover, setUploadingCover] = useState(false)
+  const coverBlobRef = useRef<string | null>(null)
 
   useEffect(() => {
     api.get("/admin/categories")
       .then((res) => setCategories((res.data || []).filter((c: any) => c.type === "blog")))
       .catch(console.error)
+    return () => {
+      if (coverBlobRef.current) URL.revokeObjectURL(coverBlobRef.current)
+    }
   }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -69,27 +74,35 @@ export default function NewArticlePage() {
     setForm((prev) => ({ ...prev, title, slug }))
   }
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-    const blobUrl = URL.createObjectURL(file)
-    setForm((prev) => ({ ...prev, featured_image: blobUrl }))
-    setUploadingImage(true)
+
+    // Preview via FileReader (data URL, compatible tous navigateurs)
+    const reader = new FileReader()
+    reader.onload = (ev) => {
+      if (ev.target?.result) {
+        setForm((prev) => ({ ...prev, featured_image: ev.target!.result as string }))
+      }
+    }
+    reader.readAsDataURL(file)
+
+    setUploadingCover(true)
     try {
       const url = await uploadToCloudinary(file)
       setForm((prev) => ({ ...prev, featured_image: url }))
-    } catch (err) {
-      setError("Erreur upload image")
+    } catch {
+      setError("Erreur upload image de couverture")
       setForm((prev) => ({ ...prev, featured_image: "" }))
     } finally {
-      setUploadingImage(false)
+      setUploadingCover(false)
       e.target.value = ""
     }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (uploadingImage) {
+    if (uploadingCover) {
       setError("Attendez la fin de l'upload avant de soumettre")
       return
     }
@@ -110,7 +123,7 @@ export default function NewArticlePage() {
   }
 
   return (
-    <div className="space-y-6 max-w-3xl">
+    <div className="space-y-6 max-w-4xl">
       <div className="flex items-center gap-4">
         <Link href="/admin/articles" className="p-2 hover:bg-secondary rounded-lg transition-colors text-muted-foreground hover:text-foreground">
           <ArrowLeft className="w-5 h-5" />
@@ -123,10 +136,9 @@ export default function NewArticlePage() {
 
       <form onSubmit={handleSubmit} className="space-y-6">
 
-        {/* Infos principales */}
+        {/* Titre & Slug */}
         <div className="bg-background border border-border rounded-2xl p-6 space-y-4">
-          <h2 className="font-semibold text-foreground">Contenu</h2>
-
+          <h2 className="font-semibold text-foreground">Titre</h2>
           <div className="grid md:grid-cols-2 gap-4">
             <div>
               <label className="text-xs font-medium text-muted-foreground mb-1 block">Titre *</label>
@@ -141,39 +153,35 @@ export default function NewArticlePage() {
                 placeholder="tendances-iot-2026" />
             </div>
           </div>
-
           <div>
             <label className="text-xs font-medium text-muted-foreground mb-1 block">Extrait / Résumé</label>
             <textarea name="excerpt" rows={3} value={form.excerpt} onChange={handleChange}
               className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:border-primary resize-none"
-              placeholder="Résumé de l'article affiché dans la liste..." />
-          </div>
-
-          <div>
-            <label className="text-xs font-medium text-muted-foreground mb-1 block">Contenu *</label>
-            <textarea name="content" required rows={12} value={form.content} onChange={handleChange}
-              className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:border-primary resize-none font-mono"
-              placeholder="Contenu complet de l'article..." />
+              placeholder="Résumé affiché dans la liste du blog..." />
           </div>
         </div>
 
-        {/* Image à la une */}
+        {/* Image de couverture */}
         <div className="bg-background border border-border rounded-2xl p-6 space-y-4">
-          <h2 className="font-semibold text-foreground">Image à la une</h2>
+          <h2 className="font-semibold text-foreground">Image de couverture</h2>
+          <p className="text-xs text-muted-foreground -mt-2">Affichée dans la liste du blog et en haut de l'article</p>
 
           <div className="flex gap-4 items-start">
             {/* Preview */}
-            <div className="w-32 h-24 rounded-xl border-2 border-dashed border-border bg-secondary/30 flex items-center justify-center overflow-hidden flex-shrink-0">
+            <div className="w-40 h-28 rounded-xl border-2 border-dashed border-border bg-secondary/30 flex items-center justify-center overflow-hidden flex-shrink-0">
               {form.featured_image ? (
                 <div className="relative w-full h-full group">
-                  <img src={form.featured_image} alt="featured" className="w-full h-full object-cover rounded-xl" />
-                  {uploadingImage && (
-                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-xl">
+                  <img src={form.featured_image} alt="couverture"
+                    className="w-full h-full object-cover rounded-xl" />
+                  {uploadingCover && (
+                    <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center rounded-xl gap-1">
                       <Loader2 className="w-5 h-5 text-white animate-spin" />
+                      <span className="text-white text-xs">Upload...</span>
                     </div>
                   )}
-                  {!uploadingImage && (
-                    <button type="button" onClick={() => setForm((p) => ({ ...p, featured_image: "" }))}
+                  {!uploadingCover && (
+                    <button type="button"
+                      onClick={() => setForm((p) => ({ ...p, featured_image: "" }))}
                       className="absolute top-1 right-1 p-1 bg-destructive rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
                       <X className="w-3 h-3 text-white" />
                     </button>
@@ -181,29 +189,44 @@ export default function NewArticlePage() {
                 </div>
               ) : (
                 <div className="text-center p-2">
-                  <ImagePlus className="w-7 h-7 text-muted-foreground mx-auto mb-1" />
-                  <span className="text-xs text-muted-foreground">Image</span>
+                  <ImagePlus className="w-8 h-8 text-muted-foreground mx-auto mb-1" />
+                  <span className="text-xs text-muted-foreground">Couverture</span>
                 </div>
               )}
             </div>
 
+            {/* Bouton upload */}
             <div className="flex-1">
-              <label className={`flex items-center gap-2 px-4 py-3 rounded-xl border border-dashed border-border bg-secondary/20 cursor-pointer hover:bg-secondary/40 transition-colors ${uploadingImage ? "opacity-50 pointer-events-none" : ""}`}>
+              <label className={`flex items-center gap-2 px-4 py-3 rounded-xl border border-dashed border-border bg-secondary/20 cursor-pointer hover:bg-secondary/40 transition-colors ${uploadingCover ? "opacity-50 pointer-events-none" : ""}`}>
                 <Upload className="w-4 h-4 text-primary" />
                 <span className="text-sm text-muted-foreground">
-                  {uploadingImage ? "Upload en cours..." : form.featured_image ? "Changer l'image" : "Uploader une image"}
+                  {uploadingCover ? "Upload vers Cloudinary..."
+                    : form.featured_image ? "Changer l'image de couverture"
+                    : "Uploader l'image de couverture"}
                 </span>
-                <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+                <input type="file" accept="image/*" className="hidden" onChange={handleCoverUpload} />
               </label>
               <p className="text-xs text-muted-foreground mt-2">JPG, PNG, WebP — max 10MB</p>
             </div>
           </div>
         </div>
 
+        {/* Éditeur de contenu */}
+        <div className="bg-background border border-border rounded-2xl p-6 space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="font-semibold text-foreground">Contenu de l'article</h2>
+            <p className="text-xs text-muted-foreground">Cliquez sur l'icône image dans la barre pour insérer une image dans le texte</p>
+          </div>
+          <RichEditor
+            value={form.content}
+            onChange={(html) => setForm((prev) => ({ ...prev, content: html }))}
+            placeholder="Commencez à écrire votre article..."
+          />
+        </div>
+
         {/* Métadonnées */}
         <div className="bg-background border border-border rounded-2xl p-6 space-y-4">
           <h2 className="font-semibold text-foreground">Métadonnées</h2>
-
           <div className="grid md:grid-cols-2 gap-4">
             <div>
               <label className="text-xs font-medium text-muted-foreground mb-1 block">Catégorie *</label>
@@ -220,7 +243,6 @@ export default function NewArticlePage() {
                 placeholder="5" />
             </div>
           </div>
-
           <div className="grid md:grid-cols-2 gap-4">
             <div>
               <label className="text-xs font-medium text-muted-foreground mb-1 block">Nom de l'auteur *</label>
@@ -235,7 +257,6 @@ export default function NewArticlePage() {
                 placeholder="auteur@inovamakers.io" />
             </div>
           </div>
-
           <div className="flex items-center gap-6">
             <label className="flex items-center gap-2 cursor-pointer">
               <input type="checkbox" name="is_featured" checked={form.is_featured} onChange={handleChange} className="w-4 h-4 rounded" />
@@ -251,7 +272,7 @@ export default function NewArticlePage() {
         {error && <p className="text-sm text-destructive bg-destructive/10 px-4 py-3 rounded-lg">{error}</p>}
 
         <div className="flex items-center gap-4 pb-8">
-          <Button type="submit" disabled={saving || uploadingImage}
+          <Button type="submit" disabled={saving || uploadingCover}
             className="bg-primary hover:bg-primary/90 text-primary-foreground">
             {saving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Création...</> : "Créer l'article"}
           </Button>
