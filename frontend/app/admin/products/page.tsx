@@ -29,7 +29,7 @@ export default function ProductsPage() {
   useEffect(() => { fetchProducts() }, [filters])
 
   const handleToggle = async (p: any) => {
-    await api.put(`/admin/products/${p.id}`, { ...p, is_active: !p.is_active })
+    await api.put(`/admin/products/${p.id}`, { is_active: !p.is_active })
     setProducts(prev => prev.map(item => item.id === p.id ? { ...item, is_active: !item.is_active } : item))
   }
 
@@ -112,7 +112,7 @@ export default function ProductsPage() {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-2">
-                      <Link href={`/admin/products/${p.id}`} className="p-1.5 hover:bg-primary/10 rounded-lg transition-colors text-muted-foreground hover:text-primary">
+                      <Link href={`/admin/products/edit?id=${p.id}`} className="p-1.5 hover:bg-primary/10 rounded-lg transition-colors text-muted-foreground hover:text-primary">
                         <Pencil className="w-4 h-4" />
                       </Link>
                       <button onClick={() => handleDelete(p.id)} className="p-1.5 hover:bg-destructive/10 rounded-lg transition-colors text-muted-foreground hover:text-destructive">

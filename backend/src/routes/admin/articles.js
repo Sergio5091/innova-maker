@@ -1,7 +1,11 @@
 const express = require('express')
 const { pool } = require('../../config/db')
+const validate = require('../../middleware/validate')
+const { buildInsert, buildUpdate } = require('../../utils/sql')
+const { articleSchema, articleUpdateSchema } = require('../../schemas/admin')
 
 const router = express.Router()
+const JSON_FIELDS = ['tags']
 
 // GET /api/admin/articles
 router.get('/', async (req, res, next) => {
@@ -35,45 +39,45 @@ router.get('/', async (req, res, next) => {
   } catch (err) { next(err) }
 })
 
-// POST /api/admin/articles
-router.post('/', async (req, res, next) => {
+// GET /api/admin/articles/:id
+router.get('/:id', async (req, res, next) => {
   try {
-    const { title, slug, excerpt, content, category_id, author_name, author_email,
-            author_bio, featured_image, read_time, tags, seo_title,
-            seo_description, is_featured } = req.body
+    const [rows] = await pool.query('SELECT * FROM articles WHERE id = ?', [req.params.id])
+    if (rows.length === 0) return res.status(404).json({ success: false, message: 'Article introuvable' })
+    res.json({ success: true, data: rows[0] })
+  } catch (err) { next(err) }
+})
 
-    const [result] = await pool.query(
-      `INSERT INTO articles (title, slug, excerpt, content, category_id, author_name,
-       author_email, author_bio, featured_image, read_time, tags, seo_title,
-       seo_description, is_featured)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [title, slug, excerpt, content, category_id, author_name, author_email || null,
-       author_bio || null, featured_image || null, read_time || null,
-       tags ? JSON.stringify(tags) : null, seo_title || null,
-       seo_description || null, is_featured || false]
-    )
+// POST /api/admin/articles
+router.post('/', validate(articleSchema), async (req, res, next) => {
+  try {
+    const data = { ...req.body }
+    if (data.is_published) data.published_at = new Date()
 
+    const { sql, params } = buildInsert('articles', data, JSON_FIELDS)
+    const [result] = await pool.query(sql, params)
     res.status(201).json({ success: true, message: 'Article créé', id: result.insertId })
   } catch (err) { next(err) }
 })
 
-// PUT /api/admin/articles/:id
-router.put('/:id', async (req, res, next) => {
+// PUT /api/admin/articles/:id — mise à jour partielle : seuls les champs envoyés sont modifiés
+router.put('/:id', validate(articleUpdateSchema), async (req, res, next) => {
   try {
-    const { title, slug, excerpt, content, category_id, author_name, author_email,
-            author_bio, featured_image, read_time, tags, seo_title,
-            seo_description, is_featured } = req.body
+    const data = { ...req.body }
 
-    await pool.query(
-      `UPDATE articles SET title=?, slug=?, excerpt=?, content=?, category_id=?,
-       author_name=?, author_email=?, author_bio=?, featured_image=?, read_time=?,
-       tags=?, seo_title=?, seo_description=?, is_featured=? WHERE id=?`,
-      [title, slug, excerpt, content, category_id, author_name, author_email || null,
-       author_bio || null, featured_image || null, read_time || null,
-       tags ? JSON.stringify(tags) : null, seo_title || null,
-       seo_description || null, is_featured, req.params.id]
-    )
+    // published_at suit is_published (on conserve la date d'origine si déjà publié)
+    if (data.is_published !== undefined) {
+      const [rows] = await pool.query('SELECT is_published FROM articles WHERE id = ?', [req.params.id])
+      if (rows.length === 0) return res.status(404).json({ success: false, message: 'Article introuvable' })
+      if (data.is_published && !rows[0].is_published) data.published_at = new Date()
+      if (!data.is_published) data.published_at = null
+    }
 
+    const query = buildUpdate('articles', data, req.params.id, JSON_FIELDS)
+    if (!query) return res.status(400).json({ success: false, message: 'Aucun champ à mettre à jour' })
+
+    const [result] = await pool.query(query.sql, query.params)
+    if (result.affectedRows === 0) return res.status(404).json({ success: false, message: 'Article introuvable' })
     res.json({ success: true, message: 'Article mis à jour' })
   } catch (err) { next(err) }
 })

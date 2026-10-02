@@ -1,7 +1,11 @@
 const express = require('express')
 const { pool } = require('../../config/db')
+const validate = require('../../middleware/validate')
+const { buildInsert, buildUpdate } = require('../../utils/sql')
+const { serviceSchema, serviceUpdateSchema } = require('../../schemas/admin')
 
 const router = express.Router()
+const JSON_FIELDS = ['features', 'pricing']
 
 router.get('/', async (req, res, next) => {
   try {
@@ -13,39 +17,30 @@ router.get('/', async (req, res, next) => {
   } catch (err) { next(err) }
 })
 
-router.post('/', async (req, res, next) => {
+router.get('/:id', async (req, res, next) => {
   try {
-    const { name, slug, description, short_description, category_id, icon,
-            color, bg_color, features, pricing, delivery_time, sort_order } = req.body
+    const [rows] = await pool.query('SELECT * FROM services WHERE id = ?', [req.params.id])
+    if (rows.length === 0) return res.status(404).json({ success: false, message: 'Service introuvable' })
+    res.json({ success: true, data: rows[0] })
+  } catch (err) { next(err) }
+})
 
-    const [result] = await pool.query(
-      `INSERT INTO services (name, slug, description, short_description, category_id,
-       icon, color, bg_color, features, pricing, delivery_time, sort_order)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [name, slug, description, short_description, category_id, icon || null,
-       color || null, bg_color || null,
-       features ? JSON.stringify(features) : null,
-       pricing ? JSON.stringify(pricing) : null,
-       delivery_time || null, sort_order || 0]
-    )
+router.post('/', validate(serviceSchema), async (req, res, next) => {
+  try {
+    const { sql, params } = buildInsert('services', req.body, JSON_FIELDS)
+    const [result] = await pool.query(sql, params)
     res.status(201).json({ success: true, message: 'Service créé', id: result.insertId })
   } catch (err) { next(err) }
 })
 
-router.put('/:id', async (req, res, next) => {
+// PUT — mise à jour partielle : seuls les champs envoyés sont modifiés
+router.put('/:id', validate(serviceUpdateSchema), async (req, res, next) => {
   try {
-    const { name, slug, description, short_description, category_id, icon,
-            color, bg_color, features, pricing, delivery_time, is_active, sort_order } = req.body
+    const query = buildUpdate('services', req.body, req.params.id, JSON_FIELDS)
+    if (!query) return res.status(400).json({ success: false, message: 'Aucun champ à mettre à jour' })
 
-    await pool.query(
-      `UPDATE services SET name=?, slug=?, description=?, short_description=?, category_id=?,
-       icon=?, color=?, bg_color=?, features=?, pricing=?, delivery_time=?, is_active=?, sort_order=?
-       WHERE id=?`,
-      [name, slug, description, short_description, category_id, icon, color, bg_color,
-       features ? JSON.stringify(features) : null,
-       pricing ? JSON.stringify(pricing) : null,
-       delivery_time, is_active, sort_order, req.params.id]
-    )
+    const [result] = await pool.query(query.sql, query.params)
+    if (result.affectedRows === 0) return res.status(404).json({ success: false, message: 'Service introuvable' })
     res.json({ success: true, message: 'Service mis à jour' })
   } catch (err) { next(err) }
 })

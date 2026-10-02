@@ -53,7 +53,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {/* Logo */}
         <div className="p-6 border-b border-border">
           <Link href="/admin" className="flex items-center gap-3">
-            <img src="/logo_inova_couleur.svg" alt="INOVA" className="h-10" />
+            <img src="/logoINOVAMakers.svg" alt="INOVA Makers" className="h-8 w-auto" />
             <div>
               <div className="text-sm font-bold text-foreground">INOVA Makers</div>
               <div className="text-xs text-muted-foreground">Administration</div>
@@ -122,7 +122,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               className="fixed inset-y-0 left-0 w-64 bg-background border-r border-border z-50 flex flex-col lg:hidden"
             >
               <div className="p-6 border-b border-border flex items-center justify-between">
-                <img src="/logo_inova_couleur.svg" alt="INOVA" className="h-10" />
+                <img src="/logoINOVAMakers.svg" alt="INOVA Makers" className="h-8 w-auto" />
                 <button onClick={() => setSidebarOpen(false)}>
                   <X className="w-5 h-5 text-muted-foreground" />
                 </button>

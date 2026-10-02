@@ -28,6 +28,12 @@ jobs:
 
       - name: Build production
         run: cd frontend && npm run build
+        env:
+          # .env.local n'existe pas en CI : sans ça, le site appellerait http://localhost:8000/api
+          NEXT_PUBLIC_API_URL: https://api.inovamakers.io/api
+          # À définir dans GitHub → Settings → Secrets and variables → Actions → Variables
+          NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ${{ vars.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}
+          NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: ${{ vars.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET }}
 
       - name: List build output
         run: ls -la frontend/ && ls -la frontend/out/ || echo "frontend/out/ not found"

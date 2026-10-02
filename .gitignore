@@ -8,3 +8,15 @@ node_modules/
 .next/
 .env*.local
 .DS_Store
+# Secrets — ne jamais versionner (seul .env.example l'est)
+.env
+**/.env
+
+# Build Next.js (export statique)
+frontend/out/
+
+# Logs
+*.log
+npm-debug.log*
+Thumbs.db
+*.tsbuildinfo

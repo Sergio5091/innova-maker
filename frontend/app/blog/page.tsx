@@ -1,14 +1,51 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
+import { useEffect, useState } from "react"
 import Link from "next/link"
+import { ArrowRight, FileText, Loader2, Search } from "lucide-react"
 import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
-import { ArrowRight, Calendar, Clock, User, Tag, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { PageHero, Section } from "@/components/site/layout"
+import { inputClass } from "@/components/site/form"
 import { api } from "@/lib/api"
+import { cn } from "@/lib/utils"
+
+const formatDate = (d: string) =>
+  d ? new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) : ""
+
+function ArticleCard({ article, large = false }: { article: any; large?: boolean }) {
+  return (
+    <Link
+      href={`/blog/article?slug=${article.slug}`}
+      className={cn(
+        "group flex flex-col overflow-hidden rounded-2xl border border-border bg-white transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg",
+        large && "lg:flex-row",
+      )}
+    >
+      <div className={cn("flex aspect-[16/10] items-center justify-center overflow-hidden bg-secondary", large && "lg:aspect-auto lg:w-1/2")}>
+        {article.featured_image ? (
+          <img src={article.featured_image} alt={article.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]" />
+        ) : (
+          <FileText className="h-10 w-10 text-primary/40" />
+        )}
+      </div>
+      <div className={cn("flex flex-1 flex-col p-6", large && "lg:p-10")}>
+        <p className="text-xs font-medium uppercase tracking-wider text-primary">{article.category_name}</p>
+        <h3 className={cn("mt-3 font-semibold text-foreground group-hover:text-primary", large ? "text-2xl lg:text-3xl tracking-tight" : "text-lg line-clamp-2")}>
+          {article.title}
+        </h3>
+        {article.excerpt && (
+          <p className={cn("mt-3 leading-relaxed text-muted-foreground", large ? "line-clamp-4" : "text-sm line-clamp-3")}>{article.excerpt}</p>
+        )}
+        <p className="mt-auto pt-6 text-sm text-muted-foreground">
+          {formatDate(article.published_at)}
+          {article.read_time ? ` · ${article.read_time} min de lecture` : ""}
+        </p>
+      </div>
+    </Link>
+  )
+}
 
 export default function BlogPage() {
   const [categories, setCategories] = useState<any[]>([])
@@ -17,303 +54,118 @@ export default function BlogPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [loading, setLoading] = useState(true)
   const [email, setEmail] = useState("")
-  const [newsletterStatus, setNewsletterStatus] = useState<"idle" | "loading" | "success" | "error">("idle")
+  const [newsletter, setNewsletter] = useState<{ status: "idle" | "loading" | "success" | "error"; message?: string }>({ status: "idle" })
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true)
-      try {
-        const [catRes, artRes] = await Promise.all([
-          api.get("/categories?type=blog"),
-          api.get("/articles?limit=20"),
-        ])
-        setCategories(catRes.data || [])
-        setArticles(artRes.data || [])
-      } catch (err) {
-        console.error(err)
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchData()
+    api.get("/categories?type=blog").then((res) => setCategories(res.data || [])).catch(() => {})
   }, [])
 
   useEffect(() => {
-    const fetchArticles = async () => {
-      try {
-        const url = selectedCategory === "all"
-          ? "/articles?limit=20"
-          : `/articles?category=${selectedCategory}&limit=20`
-        const res = await api.get(url)
-        setArticles(res.data || [])
-      } catch (err) {
-        console.error(err)
-      }
-    }
-    fetchArticles()
+    setLoading(true)
+    const url = selectedCategory === "all" ? "/articles?limit=20" : `/articles?category=${selectedCategory}&limit=20`
+    api.get(url)
+      .then((res) => setArticles(res.data || []))
+      .catch(() => setArticles([]))
+      .finally(() => setLoading(false))
   }, [selectedCategory])
 
-  const filteredArticles = articles.filter((article) => {
-    const matchesSearch =
-      article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (article.excerpt || "").toLowerCase().includes(searchQuery.toLowerCase())
-    return matchesSearch
-  })
-
-  const featuredArticles = filteredArticles.filter((a) => a.is_featured)
-  const regularArticles = filteredArticles.filter((a) => !a.is_featured)
+  const q = searchQuery.trim().toLowerCase()
+  const filtered = articles.filter((a) => !q || a.title.toLowerCase().includes(q) || (a.excerpt || "").toLowerCase().includes(q))
+  const featured = filtered.find((a) => a.is_featured)
+  const others = filtered.filter((a) => a !== featured)
 
   const handleNewsletter = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!email) return
-    setNewsletterStatus("loading")
+    setNewsletter({ status: "loading" })
     try {
-      await api.post("/newsletter", { email })
-      setNewsletterStatus("success")
+      const res = await api.post("/newsletter", { email })
+      setNewsletter({ status: "success", message: res.message })
       setEmail("")
-    } catch (err) {
-      setNewsletterStatus("error")
+    } catch (err: any) {
+      setNewsletter({ status: "error", message: err.message || "Inscription impossible, réessayez." })
     }
   }
 
-  const formatDate = (dateStr: string) => {
-    if (!dateStr) return ""
-    return new Date(dateStr).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })
-  }
+  const chip = (active: boolean) =>
+    cn(
+      "rounded-full border px-4 py-2 text-sm font-medium transition-colors",
+      active ? "border-primary bg-primary text-white" : "border-border bg-white text-foreground/75 hover:border-primary/50 hover:text-foreground",
+    )
 
   return (
-    <main className="min-h-screen">
+    <main>
       <Navigation />
 
-      <section className="pt-32 pb-16 bg-background relative overflow-hidden">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#0A4DFF08_1px,transparent_1px),linear-gradient(to_bottom,#0A4DFF08_1px,transparent_1px)] bg-[size:64px_64px]" />
-        <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center max-w-3xl mx-auto"
-          >
-            <span className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
-              Blog INOVA
-            </span>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 text-balance">
-              Actualités et <span className="text-primary">insights</span>
-            </h1>
-            <p className="text-lg text-muted-foreground leading-relaxed">
-              Restez informé des dernières tendances en innovation technologique, énergie solaire, domotique et affichage LED.
-            </p>
-          </motion.div>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Actualités"
+        title="Actualités et conseils"
+        description="Nos réalisations, nos conseils techniques et l'actualité de l'affichage LED, du solaire, de la domotique et de l'IoT."
+        breadcrumb={[{ label: "Actualités" }]}
+      />
 
-      <section className="py-12 bg-secondary/30">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          {/* Filters */}
-          <div className="flex flex-col lg:flex-row gap-6 mb-12">
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <Input
-                type="text"
-                placeholder="Rechercher un article..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-12 h-12 bg-background"
-              />
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() => setSelectedCategory("all")}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                  selectedCategory === "all"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-background text-muted-foreground hover:text-foreground border border-border"
-                }`}
-              >
-                Tous
-              </button>
-              {categories.map((cat) => (
-                <button
-                  key={cat.id}
-                  onClick={() => setSelectedCategory(cat.slug)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                    selectedCategory === cat.slug
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-background text-muted-foreground hover:text-foreground border border-border"
-                  }`}
-                >
-                  {cat.name}
-                </button>
-              ))}
-            </div>
+      <Section tone="muted" className="py-12 lg:py-16">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-wrap gap-2">
+            <button onClick={() => setSelectedCategory("all")} className={chip(selectedCategory === "all")}>Tous</button>
+            {categories.map((c) => (
+              <button key={c.id} onClick={() => setSelectedCategory(c.slug)} className={chip(selectedCategory === c.slug)}>{c.name}</button>
+            ))}
           </div>
+          <div className="relative w-full lg:w-80">
+            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <input type="search" placeholder="Rechercher un article" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
+              className={cn(inputClass, "pl-11")} aria-label="Rechercher un article" />
+          </div>
+        </div>
 
+        <div className="mt-10">
           {loading ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="bg-background rounded-2xl border border-border overflow-hidden animate-pulse">
-                  <div className="aspect-video bg-secondary/50" />
-                  <div className="p-6 space-y-3">
-                    <div className="h-4 bg-secondary rounded w-3/4" />
-                    <div className="h-3 bg-secondary rounded w-full" />
-                    <div className="h-3 bg-secondary rounded w-2/3" />
-                  </div>
+                <div key={i} className="animate-pulse overflow-hidden rounded-2xl border border-border bg-white">
+                  <div className="aspect-[16/10] bg-secondary" />
+                  <div className="space-y-3 p-6"><div className="h-3 w-1/4 rounded bg-secondary" /><div className="h-5 w-3/4 rounded bg-secondary" /><div className="h-3 w-full rounded bg-secondary" /></div>
                 </div>
               ))}
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-border bg-white px-6 py-20 text-center">
+              <FileText className="mx-auto h-10 w-10 text-muted-foreground" />
+              <h2 className="mt-4 text-lg font-semibold text-foreground">{q ? "Aucun article trouvé" : "Nos premiers articles arrivent bientôt"}</h2>
+              <p className="mx-auto mt-2 max-w-md text-muted-foreground">
+                {q ? "Essayez un autre mot-clé." : "Inscrivez-vous ci-dessous pour être prévenu de nos prochaines publications."}
+              </p>
             </div>
           ) : (
-            <>
-              {featuredArticles.length > 0 && (
-                <div className="mb-16">
-                  <h2 className="text-2xl font-bold text-foreground mb-8">Articles à la une</h2>
-                  <div className="grid md:grid-cols-2 gap-8">
-                    {featuredArticles.map((article, index) => (
-                      <motion.article
-                        key={article.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.1, duration: 0.5 }}
-                        className="group bg-background rounded-2xl border border-border overflow-hidden hover:border-primary/30 hover:shadow-xl transition-all"
-                      >
-                        <Link href={`/blog/${article.slug}`} className="block">
-                        <div className="aspect-video bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center overflow-hidden">
-                          {article.featured_image ? (
-                            <img src={article.featured_image} alt={article.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                          ) : (
-                            <div className="text-center">
-                              <Tag className="w-12 h-12 text-primary mx-auto mb-2" />
-                              <span className="text-sm text-primary font-medium">{article.category_name}</span>
-                            </div>
-                          )}
-                        </div>
-                        <div className="p-8">
-                          <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
-                            <span className="flex items-center gap-1">
-                              <Calendar className="w-4 h-4" />
-                              {formatDate(article.published_at)}
-                            </span>
-                            {article.read_time && (
-                              <span className="flex items-center gap-1">
-                                <Clock className="w-4 h-4" />
-                                {article.read_time} min
-                              </span>
-                            )}
-                          </div>
-                          <h3 className="text-xl font-semibold text-foreground mb-3 group-hover:text-primary transition-colors">
-                            {article.title}
-                          </h3>
-                          <p className="text-muted-foreground mb-6 leading-relaxed line-clamp-3">{article.excerpt}</p>
-                          <div className="flex items-center justify-between">
-                            <span className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <User className="w-4 h-4" />
-                              {article.author_name}
-                            </span>
-                            <span className="flex items-center gap-1 text-sm font-medium text-primary">
-                              Lire l&apos;article
-                              <ArrowRight className="w-4 h-4" />
-                            </span>
-                          </div>
-                        </div>
-                        </Link>
-                      </motion.article>
-                    ))}
-                  </div>
+            <div className="space-y-6">
+              {featured && <ArticleCard article={featured} large />}
+              {others.length > 0 && (
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                  {others.map((a) => <ArticleCard key={a.id} article={a} />)}
                 </div>
               )}
-
-              {regularArticles.length > 0 && (
-                <div>
-                  <h2 className="text-2xl font-bold text-foreground mb-8">Tous les articles</h2>
-                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {regularArticles.map((article, index) => (
-                      <motion.article
-                        key={article.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.05, duration: 0.5 }}
-                        className="group bg-background rounded-2xl border border-border p-6 hover:border-primary/30 hover:shadow-xl transition-all"
-                      >
-                        <Link href={`/blog/${article.slug}`} className="block">
-                        <div className="flex items-center gap-2 mb-4">
-                          <span className="px-3 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full">
-                            {article.category_name}
-                          </span>
-                          {article.read_time && (
-                            <span className="text-xs text-muted-foreground">{article.read_time} min</span>
-                          )}
-                        </div>
-                        <h3 className="text-lg font-semibold text-foreground mb-3 group-hover:text-primary transition-colors line-clamp-2">
-                          {article.title}
-                        </h3>
-                        <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{article.excerpt}</p>
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-muted-foreground">{formatDate(article.published_at)}</span>
-                          <span className="flex items-center gap-1 text-primary font-medium">
-                            Lire <ArrowRight className="w-3 h-3" />
-                          </span>
-                        </div>
-                        </Link>
-                      </motion.article>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {filteredArticles.length === 0 && (
-                <div className="text-center py-16">
-                  <div className="w-16 h-16 bg-secondary rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Search className="w-8 h-8 text-muted-foreground" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-foreground mb-2">Aucun article trouvé</h3>
-                  <p className="text-muted-foreground">Essayez de modifier vos critères de recherche.</p>
-                </div>
-              )}
-            </>
+            </div>
           )}
         </div>
-      </section>
+      </Section>
 
       {/* Newsletter */}
-      <section className="py-24 bg-primary">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center max-w-2xl mx-auto"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-4">
-              Restez informé
-            </h2>
-            <p className="text-lg text-primary-foreground/80 mb-8">
-              Inscrivez-vous à notre newsletter pour recevoir nos derniers articles et actualités.
-            </p>
-            {newsletterStatus === "success" ? (
-              <p className="text-primary-foreground font-medium text-lg">✅ Inscription confirmée !</p>
-            ) : (
-              <form onSubmit={handleNewsletter} className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Input
-                  type="email"
-                  placeholder="Votre adresse email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="h-12 bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50 max-w-sm"
-                />
-                <Button
-                  type="submit"
-                  size="lg"
-                  disabled={newsletterStatus === "loading"}
-                  className="bg-foreground text-background hover:bg-foreground/90"
-                >
-                  {newsletterStatus === "loading" ? "Inscription..." : "S'inscrire"}
-                </Button>
-              </form>
-            )}
-            {newsletterStatus === "error" && (
-              <p className="text-red-200 mt-3 text-sm">Une erreur est survenue. Réessayez.</p>
-            )}
-          </motion.div>
+      <section className="bg-ink">
+        <div className="mx-auto grid max-w-7xl items-center gap-8 px-6 py-16 lg:grid-cols-2 lg:px-8">
+          <div className="text-white">
+            <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">Recevez nos actualités</h2>
+            <p className="mt-2 text-white/70">Un email de temps en temps, avec nos réalisations et nos conseils. Désinscription en un clic.</p>
+          </div>
+          <form onSubmit={handleNewsletter} className="flex flex-col gap-3 sm:flex-row">
+            <input type="email" required placeholder="Votre adresse email" value={email} onChange={(e) => setEmail(e.target.value)}
+              className={cn(inputClass, "flex-1 border-transparent")} aria-label="Adresse email" />
+            <Button type="submit" disabled={newsletter.status === "loading"} className="h-12 px-6">
+              {newsletter.status === "loading" ? <Loader2 className="h-4 w-4 animate-spin" /> : <>S'inscrire <ArrowRight className="ml-1 h-4 w-4" /></>}
+            </Button>
+          </form>
+          {newsletter.message && (
+            <p className={cn("text-sm lg:col-start-2", newsletter.status === "error" ? "text-red-300" : "text-emerald-300")}>{newsletter.message}</p>
+          )}
         </div>
       </section>
 

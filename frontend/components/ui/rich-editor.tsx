@@ -5,7 +5,7 @@ import StarterKit from "@tiptap/starter-kit"
 import Image from "@tiptap/extension-image"
 import TextAlign from "@tiptap/extension-text-align"
 import Underline from "@tiptap/extension-underline"
-import TextStyle from "@tiptap/extension-text-style"
+import { TextStyle } from "@tiptap/extension-text-style"
 import Color from "@tiptap/extension-color"
 import { useEffect, useRef } from "react"
 import {
@@ -44,7 +44,8 @@ export function RichEditor({ value, onChange, placeholder }: RichEditorProps) {
 
   const editor = useEditor({
     extensions: [
-      StarterKit,
+      // StarterKit v3 inclut déjà Underline : on le désactive pour éviter le doublon avec l'extension ci-dessous
+      StarterKit.configure({ underline: false }),
       Underline,
       TextStyle,
       Color,

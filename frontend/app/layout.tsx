@@ -1,40 +1,38 @@
 import type { Metadata } from 'next'
-import { Poppins } from 'next/font/google'
-import { Analytics } from '@vercel/analytics/next'
+import { Inter } from 'next/font/google'
 import './globals.css'
 
-const poppins = Poppins({ 
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-poppins"
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
 })
 
+const title = 'INOVA Makers — Écrans LED, énergie solaire, domotique et IoT au Bénin'
+const description =
+  "Depuis 2014, INOVA Makers conçoit, installe et maintient des écrans LED, des installations solaires, des systèmes domotiques et des solutions IoT pour les entreprises et les particuliers au Bénin."
+
 export const metadata: Metadata = {
-  title: 'INOVA Makers | "Vous avez l\'idée. Nous avons l\'ingénierie."',
-  description: "De l'esquisse au prototype fonctionnel, INOVA Makers matérialise vos innovations. Conseil stratégie, conception fabrication et R&D IoT.",
+  metadataBase: new URL('https://inovamakers.io'),
+  title: { default: title, template: '%s | INOVA Makers' },
+  description,
   openGraph: {
-    title: 'INOVA Makers | "Vous avez l\'idée. Nous avons l\'ingénierie."',
-    description: "De l'esquisse au prototype fonctionnel, INOVA Makers matérialise vos innovations. Conseil stratégie, conception fabrication et R&D IoT.",
+    title,
+    description,
     type: 'website',
+    locale: 'fr_FR',
     siteName: 'INOVA Makers',
-    images: [
-      {
-        url: '/logo_inova_couleur.svg',
-        width: 1200,
-        height: 630,
-        alt: 'INOVA Makers',
-      },
-    ],
+    images: [{ url: '/logoINOVAMakers.svg', alt: 'INOVA Makers' }],
   },
   twitter: {
-    card: 'summary_large_image',
-    title: 'INOVA Makers | "Vous avez l\'idée. Nous avons l\'ingénierie."',
-    description: "De l'esquisse au prototype fonctionnel, INOVA Makers matérialise vos innovations. Conseil stratégie, conception fabrication et R&D IoT.",
-    images: ['/logo_inova_couleur.svg'],
+    card: 'summary',
+    title,
+    description,
+    images: ['/logoINOVAMakers.svg'],
   },
   icons: {
-    icon: '/logo_inova_couleur.svg',
-    apple: '/logo_inova_couleur.svg',
+    icon: '/favicon.svg',
+    apple: '/favicon.svg',
   },
 }
 
@@ -45,9 +43,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr">
-      <body className={`${poppins.className} antialiased`}>
+      <body className={`${inter.variable} font-sans antialiased`}>
         {children}
-        <Analytics />
       </body>
     </html>
   )

@@ -53,7 +53,7 @@ export default function AdminLoginPage() {
       >
         {/* Logo */}
         <div className="text-center mb-8">
-          <img src="/logo_inova_couleur.svg" alt="INOVA Makers" className="h-16 mx-auto mb-4" />
+          <img src="/logoINOVAMakers.svg" alt="INOVA Makers" className="h-12 w-auto mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-foreground">Espace Administration</h1>
           <p className="text-muted-foreground text-sm mt-1">Connectez-vous pour accéder au dashboard</p>
         </div>

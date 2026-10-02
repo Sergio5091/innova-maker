@@ -1,165 +1,62 @@
-"use client"
-
 import Link from "next/link"
-import { motion } from "framer-motion"
-import { Mail, Phone, MapPin, Linkedin, Twitter, Facebook, Instagram, Globe } from "lucide-react"
-
-const footerLinks = {
-  services: [
-    { href: "/engineering", label: "Engineering" },
-    { href: "/domotics", label: "Domotique" },
-    { href: "/display", label: "Affichage LED" },
-    { href: "/shop", label: "Boutique" },
-  ],
-  company: [
-    { href: "/about", label: "À propos" },
-    { href: "/blog", label: "Blog" },
-    { href: "/contact", label: "Contact" },
-    { href: "/careers", label: "Carrières" },
-  ],
-  legal: [
-    { href: "/privacy", label: "Confidentialité" },
-    { href: "/terms", label: "Conditions" },
-    { href: "/cookies", label: "Cookies" },
-  ],
-}
-
-const socialLinks = [
-  { href: "#", icon: Linkedin, label: "LinkedIn" },
-  { href: "#", icon: Twitter, label: "Twitter" },
-  { href: "#", icon: Facebook, label: "Facebook" },
-  { href: "#", icon: Instagram, label: "Instagram" },
-]
+import { Mail, Phone, MapPin } from "lucide-react"
+import { company, navigation, services, socialLinks } from "@/lib/site"
 
 export function Footer() {
   return (
-    <footer className="bg-foreground text-background">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
-          {/* Brand */}
-          <div className="lg:col-span-2">
-            <Link href="/" className="flex items-center gap-2 mb-6">
-              <img 
-                src="/logo_inova_blanc.svg" 
-                alt="INOVA Makers Logo" 
-                className="w-20 h-20"
-              />
-              <span className="text-xl font-semibold">
-                INOVA <span className="text-primary">Makers</span>
-              </span>
+    <footer className="bg-ink text-white/70">
+      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-12 py-16 md:grid-cols-2 lg:grid-cols-12">
+          <div className="lg:col-span-4">
+            <Link href="/" aria-label="INOVA Makers — Accueil">
+              <img src="/logoINOVAMakers-blanc.svg" alt="INOVA Makers" className="h-10 w-auto" />
             </Link>
-            <p className="text-background/70 mb-6 max-w-sm leading-relaxed">
-              De l'esquisse au prototype fonctionnel, nous matérialisons vos innovations.
+            <p className="mt-6 max-w-sm leading-relaxed">
+              Écrans LED, énergie solaire, domotique et IoT. Une équipe d'ingénierie basée à {company.city} depuis {company.foundedYear}.
             </p>
-            <div className="flex gap-4">
-              {socialLinks.map((social) => (
-                <motion.a
-                  key={social.label}
-                  href={social.href}
-                  whileHover={{ scale: 1.1, y: -2 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="w-10 h-10 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors"
-                  aria-label={social.label}
-                >
-                  <social.icon size={18} />
-                </motion.a>
-              ))}
-            </div>
+            {socialLinks.length > 0 && (
+              <div className="mt-6 flex flex-wrap gap-4 text-sm">
+                {socialLinks.map((s) => (
+                  <a key={s.href} href={s.href} target="_blank" rel="noopener noreferrer" className="text-white/80 hover:text-white">
+                    {s.label}
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
 
-          {/* Services */}
-          <div>
-            <h4 className="font-semibold mb-4">Services</h4>
-            <ul className="space-y-3">
-              {footerLinks.services.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-background/70 hover:text-primary transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
+          <div className="lg:col-span-3">
+            <h3 className="text-sm font-semibold text-white">Services</h3>
+            <ul className="mt-4 space-y-3 text-sm">
+              {services.map((s) => (
+                <li key={s.key}><Link href={s.href} className="hover:text-white">{s.name}</Link></li>
               ))}
             </ul>
           </div>
 
-          {/* Company */}
-          <div>
-            <h4 className="font-semibold mb-4">Entreprise</h4>
-            <ul className="space-y-3">
-              {footerLinks.company.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-background/70 hover:text-primary transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
+          <div className="lg:col-span-2">
+            <h3 className="text-sm font-semibold text-white">Entreprise</h3>
+            <ul className="mt-4 space-y-3 text-sm">
+              {navigation.main.map((l) => (
+                <li key={l.href}><Link href={l.href} className="hover:text-white">{l.label}</Link></li>
               ))}
+              <li><Link href="/quote" className="hover:text-white">Demander un devis</Link></li>
             </ul>
           </div>
 
-          {/* Contact */}
-          <div>
-            <h4 className="font-semibold mb-4">Contact</h4>
-            <ul className="space-y-3">
-              <li>
-                <a
-                  href="mailto:contact@inovamakers.io"
-                  className="flex items-center gap-3 text-background/70 hover:text-primary transition-colors"
-                >
-                  <Mail size={18} />
-                  <span>contact@inovamakers.io</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  href="tel:+22944557777"
-                  className="flex items-center gap-3 text-background/70 hover:text-primary transition-colors"
-                >
-                  <Phone size={18} />
-                  <span>+229 44 55 77 77</span>
-                </a>
-              </li>
-              <li>
-                <div className="flex items-center gap-3 text-background/70">
-                  <MapPin size={18} />
-                  <span>Aïmevo - Godomey, Bénin</span>
-                </div>
-              </li>
-              <li>
-                <a
-                  href="https://www.inovamakers.io"
-                  className="flex items-center gap-3 text-background/70 hover:text-primary transition-colors"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Globe size={18} />
-                  <span>www.inovamakers.io</span>
-                </a>
-              </li>
+          <div className="lg:col-span-3">
+            <h3 className="text-sm font-semibold text-white">Contact</h3>
+            <ul className="mt-4 space-y-3 text-sm">
+              <li className="flex gap-3"><MapPin className="mt-0.5 h-4 w-4 shrink-0" />{company.address}</li>
+              <li className="flex gap-3"><Phone className="mt-0.5 h-4 w-4 shrink-0" /><a href={company.phoneHref} className="hover:text-white">{company.phone}</a></li>
+              <li className="flex gap-3"><Mail className="mt-0.5 h-4 w-4 shrink-0" /><a href={`mailto:${company.email}`} className="hover:text-white">{company.email}</a></li>
             </ul>
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="py-6 border-t border-background/10 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-background/50 text-sm">
-            © {new Date().getFullYear()} INOVA Makers. Tous droits réservés.
-          </p>
-          <div className="flex gap-6">
-            {footerLinks.legal.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-background/50 text-sm hover:text-primary transition-colors"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
+        <div className="flex flex-col gap-4 border-t border-white/10 py-6 text-sm sm:flex-row sm:items-center sm:justify-between">
+          <p>© {new Date().getFullYear()} {company.name}. Tous droits réservés.</p>
+          <Link href="/mentions-legales" className="hover:text-white">Mentions légales</Link>
         </div>
       </div>
     </footer>
