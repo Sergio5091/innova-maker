@@ -1,16 +1,19 @@
-name: Deploy Frontend — inovamakers.io
+name: Deploy — inovamakers.io
 
 on:
   push:
     branches:
       - main
+      - develop
     paths:
       - 'frontend/**'
+      - 'backend/**'
 
 jobs:
-  deploy:
-    name: Build & Deploy
+  deploy-frontend:
+    name: Build & Deploy Frontend
     runs-on: ubuntu-latest
+    if: contains(github.event.commits[0].modified, 'frontend/') || contains(github.event.commits[0].added, 'frontend/')
 
     steps:
       - name: Checkout repository
@@ -29,9 +32,7 @@ jobs:
       - name: Build production
         run: cd frontend && npm run build
         env:
-          # .env.local n'existe pas en CI : sans ça, le site appellerait http://localhost:8000/api
           NEXT_PUBLIC_API_URL: https://api.inovamakers.io/api
-          # À définir dans GitHub → Settings → Secrets and variables → Actions → Variables
           NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ${{ vars.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}
           NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: ${{ vars.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET }}
 
@@ -57,3 +58,22 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT }}
           script: sudo systemctl reload nginx
+
+  deploy-backend:
+    name: Deploy Backend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy backend to VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          script: |
+            git -C /tmp/inovamakers-new pull origin ${{ github.ref_name }} 2>/dev/null || git clone -b ${{ github.ref_name }} https://github.com/Sergio5091/innova-maker.git /tmp/inovamakers-new
+            cp -r /tmp/inovamakers-new/backend/* /var/www/inovamakers/backend/
+            cd /var/www/inovamakers/backend
+            npm install --production
+            pm2 restart inovamakers-api --update-env
