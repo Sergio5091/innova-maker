@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - develop
     paths:
       - 'frontend/**'
       - 'backend/**'
@@ -68,8 +69,8 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT }}
           script: |
-            cd /var/www/inovamakers/backend
-            git -C /tmp/inovamakers-new pull origin main 2>/dev/null || git clone -b main https://github.com/Sergio5091/innova-maker.git /tmp/inovamakers-new
+            git -C /tmp/inovamakers-new pull origin ${{ github.ref_name }} 2>/dev/null || git clone -b ${{ github.ref_name }} https://github.com/Sergio5091/innova-maker.git /tmp/inovamakers-new
             cp -r /tmp/inovamakers-new/backend/* /var/www/inovamakers/backend/
+            cd /var/www/inovamakers/backend
             npm install --production
             pm2 restart inovamakers-api --update-env
