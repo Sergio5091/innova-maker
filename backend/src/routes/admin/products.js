@@ -1,7 +1,11 @@
 const express = require('express')
 const { pool } = require('../../config/db')
+const validate = require('../../middleware/validate')
+const { buildInsert, buildUpdate } = require('../../utils/sql')
+const { productSchema, productUpdateSchema } = require('../../schemas/admin')
 
 const router = express.Router()
+const JSON_FIELDS = ['images', 'features', 'specifications']
 
 // GET /api/admin/products
 router.get('/', async (req, res, next) => {
@@ -33,47 +37,32 @@ router.get('/', async (req, res, next) => {
   } catch (err) { next(err) }
 })
 
-// POST /api/admin/products
-router.post('/', async (req, res, next) => {
+// GET /api/admin/products/:id
+router.get('/:id', async (req, res, next) => {
   try {
-    const { name, slug, description, short_description, price, currency, category_id,
-            sku, stock_quantity, badge, images, features, specifications, is_featured } = req.body
+    const [rows] = await pool.query('SELECT * FROM products WHERE id = ?', [req.params.id])
+    if (rows.length === 0) return res.status(404).json({ success: false, message: 'Produit introuvable' })
+    res.json({ success: true, data: rows[0] })
+  } catch (err) { next(err) }
+})
 
-    const [result] = await pool.query(
-      `INSERT INTO products (name, slug, description, short_description, price, currency,
-       category_id, sku, stock_quantity, badge, images, features, specifications, is_featured)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [name, slug, description, short_description, price, currency || 'FCFA',
-       category_id, sku || null, stock_quantity || 0, badge || null,
-       images ? JSON.stringify(images) : null,
-       features ? JSON.stringify(features) : null,
-       specifications ? JSON.stringify(specifications) : null,
-       is_featured || false]
-    )
-
+// POST /api/admin/products
+router.post('/', validate(productSchema), async (req, res, next) => {
+  try {
+    const { sql, params } = buildInsert('products', req.body, JSON_FIELDS)
+    const [result] = await pool.query(sql, params)
     res.status(201).json({ success: true, message: 'Produit créé', id: result.insertId })
   } catch (err) { next(err) }
 })
 
-// PUT /api/admin/products/:id
-router.put('/:id', async (req, res, next) => {
+// PUT /api/admin/products/:id — mise à jour partielle : seuls les champs envoyés sont modifiés
+router.put('/:id', validate(productUpdateSchema), async (req, res, next) => {
   try {
-    const { name, slug, description, short_description, price, currency, category_id,
-            sku, stock_quantity, stock_status, badge, images, features,
-            specifications, is_featured, is_active } = req.body
+    const query = buildUpdate('products', req.body, req.params.id, JSON_FIELDS)
+    if (!query) return res.status(400).json({ success: false, message: 'Aucun champ à mettre à jour' })
 
-    await pool.query(
-      `UPDATE products SET name=?, slug=?, description=?, short_description=?, price=?,
-       currency=?, category_id=?, sku=?, stock_quantity=?, stock_status=?, badge=?,
-       images=?, features=?, specifications=?, is_featured=?, is_active=? WHERE id=?`,
-      [name, slug, description, short_description, price, currency, category_id,
-       sku, stock_quantity, stock_status,  badge,
-       images ? JSON.stringify(images) : null,
-       features ? JSON.stringify(features) : null,
-       specifications ? JSON.stringify(specifications) : null,
-       is_featured, is_active, req.params.id]
-    )
-
+    const [result] = await pool.query(query.sql, query.params)
+    if (result.affectedRows === 0) return res.status(404).json({ success: false, message: 'Produit introuvable' })
     res.json({ success: true, message: 'Produit mis à jour' })
   } catch (err) { next(err) }
 })

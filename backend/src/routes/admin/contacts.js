@@ -1,5 +1,8 @@
 const express = require('express')
 const { pool } = require('../../config/db')
+const validate = require('../../middleware/validate')
+const { buildUpdate } = require('../../utils/sql')
+const { contactPatchSchema } = require('../../schemas/admin')
 
 const router = express.Router()
 
@@ -47,21 +50,13 @@ router.get('/:id', async (req, res, next) => {
 })
 
 // PATCH /api/admin/contacts/:id
-router.patch('/:id', async (req, res, next) => {
+router.patch('/:id', validate(contactPatchSchema), async (req, res, next) => {
   try {
-    const { status, priority, assigned_to, notes } = req.body
-    const fields = []
-    const params = []
+    const query = buildUpdate('contacts', req.body, req.params.id)
+    if (!query) return res.status(400).json({ success: false, message: 'Aucun champ à mettre à jour' })
 
-    if (status) { fields.push('status = ?'); params.push(status) }
-    if (priority) { fields.push('priority = ?'); params.push(priority) }
-    if (assigned_to !== undefined) { fields.push('assigned_to = ?'); params.push(assigned_to) }
-    if (notes !== undefined) { fields.push('notes = ?'); params.push(notes) }
-
-    if (fields.length === 0) return res.status(400).json({ success: false, message: 'Aucun champ à mettre à jour' })
-
-    params.push(req.params.id)
-    await pool.query(`UPDATE contacts SET ${fields.join(', ')} WHERE id = ?`, params)
+    const [result] = await pool.query(query.sql, query.params)
+    if (result.affectedRows === 0) return res.status(404).json({ success: false, message: 'Contact introuvable' })
     res.json({ success: true, message: 'Contact mis à jour' })
   } catch (err) { next(err) }
 })

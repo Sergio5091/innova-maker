@@ -27,7 +27,7 @@ export default function ServicesPage() {
   )
 
   const handleToggle = async (s: any) => {
-    await api.put(`/admin/services/${s.id}`, { ...s, is_active: !s.is_active })
+    await api.put(`/admin/services/${s.id}`, { is_active: !s.is_active })
     setServices(prev => prev.map(item => item.id === s.id ? { ...item, is_active: !item.is_active } : item))
   }
 
@@ -96,7 +96,7 @@ export default function ServicesPage() {
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center justify-end gap-2">
-                    <Link href={`/admin/services/${s.id}`} className="p-1.5 hover:bg-primary/10 rounded-lg text-muted-foreground hover:text-primary transition-colors">
+                    <Link href={`/admin/services/edit?id=${s.id}`} className="p-1.5 hover:bg-primary/10 rounded-lg text-muted-foreground hover:text-primary transition-colors">
                       <Pencil className="w-4 h-4" />
                     </Link>
                     <button onClick={() => handleDelete(s.id)} className="p-1.5 hover:bg-destructive/10 rounded-lg text-muted-foreground hover:text-destructive transition-colors">

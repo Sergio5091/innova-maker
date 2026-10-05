@@ -4,39 +4,42 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.23 0.02 255);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.23 0.02 255);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.23 0.02 255);
-  --primary: oklch(0.45 0.25 260);
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.97 0.005 260);
-  --secondary-foreground: oklch(0.23 0.02 255);
-  --muted: oklch(0.97 0.005 260);
-  --muted-foreground: oklch(0.5 0.01 255);
-  --accent: oklch(0.45 0.25 260);
-  --accent-foreground: oklch(1 0 0);
+  /* Charte INOVA Makers — bleu du logo #0064ff, neutres ardoise */
+  --background: #ffffff;
+  --foreground: #0b1220;
+  --card: #ffffff;
+  --card-foreground: #0b1220;
+  --popover: #ffffff;
+  --popover-foreground: #0b1220;
+  --primary: #0064ff;
+  --primary-foreground: #ffffff;
+  --secondary: #f4f6fa;
+  --secondary-foreground: #0b1220;
+  --muted: #f4f6fa;
+  --muted-foreground: #5b6474;
+  --accent: #0064ff;
+  --accent-foreground: #ffffff;
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.577 0.245 27.325);
-  --border: oklch(0.92 0.005 260);
-  --input: oklch(0.92 0.005 260);
-  --ring: oklch(0.45 0.25 260);
-  --chart-1: oklch(0.45 0.25 260);
+  --border: #e3e7ee;
+  --input: #d9dee7;
+  --ring: #0064ff;
+  /* Fond des bandeaux sombres (hero de page, appel à l'action, footer) */
+  --ink: #0a1628;
+  --chart-1: #0064ff;
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --radius: 0.625rem;
+  --radius: 0.5rem;
   --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.23 0.02 255);
-  --sidebar-primary: oklch(0.45 0.25 260);
-  --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.97 0.005 260);
-  --sidebar-accent-foreground: oklch(0.23 0.02 255);
-  --sidebar-border: oklch(0.92 0.005 260);
-  --sidebar-ring: oklch(0.45 0.25 260);
+  --sidebar-foreground: #0b1220;
+  --sidebar-primary: #0064ff;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f4f6fa;
+  --sidebar-accent-foreground: #0b1220;
+  --sidebar-border: #e3e7ee;
+  --sidebar-ring: #0064ff;
 }
 
 .dark {
@@ -75,8 +78,9 @@
 }
 
 @theme inline {
-  --font-sans: 'Poppins', 'Poppins Fallback', sans-serif;
-  --font-mono: 'Geist Mono', 'Geist Mono Fallback';
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --color-ink: var(--ink);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -138,3 +142,21 @@
     cursor: pointer;
   }
 }
+
+/* Contenu HTML des articles (éditeur Tiptap) */
+@layer components {
+  .article-content { color: var(--foreground); font-size: 1.0625rem; line-height: 1.8; }
+  .article-content h1 { font-size: 1.875rem; font-weight: 700; margin: 2rem 0 0.75rem; letter-spacing: -0.02em; }
+  .article-content h2 { font-size: 1.5rem; font-weight: 600; margin: 1.75rem 0 0.75rem; letter-spacing: -0.015em; }
+  .article-content h3 { font-size: 1.25rem; font-weight: 600; margin: 1.5rem 0 0.5rem; }
+  .article-content p { margin: 0.9rem 0; }
+  .article-content a { color: var(--primary); text-decoration: underline; text-underline-offset: 3px; }
+  .article-content ul { list-style: disc; padding-left: 1.5rem; margin: 0.9rem 0; }
+  .article-content ol { list-style: decimal; padding-left: 1.5rem; margin: 0.9rem 0; }
+  .article-content li { margin: 0.3rem 0; }
+  .article-content blockquote { border-left: 3px solid var(--primary); padding-left: 1rem; margin: 1.25rem 0; color: var(--muted-foreground); font-style: italic; }
+  .article-content hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+  .article-content img { max-width: 100%; height: auto; border-radius: var(--radius); margin: 1.25rem 0; }
+  .article-content strong { font-weight: 700; }
+}
+

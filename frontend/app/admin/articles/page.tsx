@@ -112,7 +112,7 @@ export default function ArticlesPage() {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-2">
-                      <Link href={`/admin/articles/${a.id}`} className="p-1.5 hover:bg-primary/10 rounded-lg transition-colors text-muted-foreground hover:text-primary">
+                      <Link href={`/admin/articles/edit?id=${a.id}`} className="p-1.5 hover:bg-primary/10 rounded-lg transition-colors text-muted-foreground hover:text-primary">
                         <Pencil className="w-4 h-4" />
                       </Link>
                       <button onClick={() => handleDelete(a.id)} className="p-1.5 hover:bg-destructive/10 rounded-lg transition-colors text-muted-foreground hover:text-destructive">
