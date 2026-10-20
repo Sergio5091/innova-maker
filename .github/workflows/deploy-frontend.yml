@@ -8,12 +8,14 @@ on:
     paths:
       - 'frontend/**'
       - 'backend/**'
+      - '.github/workflows/**'
+  # Bouton « Run workflow » dans l'onglet Actions pour redéployer manuellement
+  workflow_dispatch:
 
 jobs:
   deploy-frontend:
     name: Build & Deploy Frontend
     runs-on: ubuntu-latest
-    if: contains(github.event.commits[0].modified, 'frontend/') || contains(github.event.commits[0].added, 'frontend/')
 
     steps:
       - name: Checkout repository
