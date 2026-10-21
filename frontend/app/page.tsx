@@ -1,10 +1,10 @@
 import Link from "next/link"
-import { ArrowRight, ArrowUpRight, Check, MapPin, Users, Wrench, SlidersHorizontal } from "lucide-react"
+import { ArrowRight, Check, MapPin, Users, Wrench, SlidersHorizontal } from "lucide-react"
 import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { Container, CtaBand, Eyebrow, Section, SectionHeading } from "@/components/site/layout"
-import { company, processSteps, services, stats } from "@/lib/site"
+import { company, images, processSteps, services, stats } from "@/lib/site"
 
 const strengths = [
   { icon: MapPin, title: "Une équipe locale", description: `Basés à ${company.city}, nous intervenons rapidement et connaissons les contraintes du terrain béninois.` },
@@ -44,25 +44,15 @@ export default function HomePage() {
             <p className="mt-6 text-sm text-muted-foreground">Réponse sous 24 h ouvrées · Intervention dans tout le Bénin</p>
           </div>
 
-          <div className="lg:col-span-5">
-            <div className="rounded-2xl border border-border bg-white p-2 shadow-[0_24px_60px_-24px_rgba(10,22,40,0.25)]">
-              <p className="px-4 pt-4 pb-2 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Nos domaines d'expertise</p>
-              <ul>
-                {services.map((s) => (
-                  <li key={s.key}>
-                    <Link href={s.href} className="group flex items-center gap-4 rounded-xl p-4 transition-colors hover:bg-secondary">
-                      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary text-white">
-                        <s.icon className="h-5 w-5" />
-                      </span>
-                      <span className="min-w-0 flex-1">
-                        <span className="block font-semibold text-foreground">{s.name}</span>
-                        <span className="block text-sm text-muted-foreground sm:truncate">{s.tagline}</span>
-                      </span>
-                      <ArrowUpRight className="h-5 w-5 shrink-0 text-muted-foreground transition-colors group-hover:text-primary" />
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+          <div className="relative lg:col-span-5">
+            <img
+              src={images.hero.src}
+              alt={images.hero.alt}
+              className="aspect-[4/5] w-full rounded-2xl object-cover shadow-[0_24px_60px_-24px_rgba(10,22,40,0.35)] lg:aspect-[4/5]"
+            />
+            <div className="absolute -bottom-6 left-6 right-6 rounded-xl border border-border bg-white p-5 shadow-lg sm:left-auto sm:right-6 sm:w-64">
+              <p className="text-3xl font-semibold tracking-tight text-foreground">50+</p>
+              <p className="mt-1 text-sm text-muted-foreground">projets réalisés depuis {company.foundedYear}, partout au Bénin</p>
             </div>
           </div>
         </Container>
@@ -100,9 +90,13 @@ export default function HomePage() {
             <Link
               key={s.key}
               href={s.href}
-              className="group flex flex-col rounded-2xl border border-border bg-white p-8 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg"
+              className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-white transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg"
             >
-              <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <div className="aspect-[16/9] overflow-hidden bg-secondary">
+                <img src={s.image} alt={s.name} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]" />
+              </div>
+              <div className="flex flex-1 flex-col p-8">
+              <span className="-mt-14 flex h-12 w-12 items-center justify-center rounded-lg bg-primary text-white shadow-md ring-4 ring-white">
                 <s.icon className="h-6 w-6" />
               </span>
               <h3 className="mt-6 text-xl font-semibold text-foreground">{s.name}</h3>
@@ -117,6 +111,7 @@ export default function HomePage() {
               <span className="mt-8 inline-flex items-center gap-1 text-sm font-semibold text-primary">
                 En savoir plus <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </span>
+              </div>
             </Link>
           ))}
         </div>

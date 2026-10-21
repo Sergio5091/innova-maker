@@ -3,7 +3,7 @@ import { Lightbulb, Award, ShieldCheck, Handshake } from "lucide-react"
 import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
 import { Container, CtaBand, PageHero, Section, SectionHeading } from "@/components/site/layout"
-import { company, stats } from "@/lib/site"
+import { company, images, stats } from "@/lib/site"
 
 export const metadata: Metadata = {
   title: "À propos",
@@ -33,11 +33,10 @@ export default function AboutPage() {
 
       {/* Histoire */}
       <Section>
-        <div className="grid grid-cols-1 gap-14 lg:grid-cols-12">
-          <div className="lg:col-span-5">
+        <div className="grid grid-cols-1 items-center gap-14 lg:grid-cols-12">
+          <div className="lg:col-span-7">
             <SectionHeading eyebrow="Notre histoire" title={`Plus de ${years} ans d'expérience terrain`} />
-          </div>
-          <div className="space-y-5 text-lg leading-relaxed text-muted-foreground lg:col-span-7">
+            <div className="mt-8 space-y-5 text-lg leading-relaxed text-muted-foreground">
             <p>
               INOVA Makers est née en {company.foundedYear} à {company.city} d'une conviction : la technologie doit être
               utile, fiable et accessible. Depuis, nous accompagnons nos clients sur des projets concrets dans quatre domaines :
@@ -47,6 +46,10 @@ export default function AboutPage() {
               Notre force : une équipe qui maîtrise l'ensemble de la chaîne, de l'étude technique à la maintenance. Vous avez
               un seul interlocuteur, qui connaît votre installation et reste disponible dans la durée.
             </p>
+            </div>
+          </div>
+          <div className="lg:col-span-5">
+            <img src={images.about.src} alt={images.about.alt} className="aspect-[4/3] w-full rounded-2xl object-cover" />
           </div>
         </div>
       </Section>

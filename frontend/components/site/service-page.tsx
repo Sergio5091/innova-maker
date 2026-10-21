@@ -20,6 +20,7 @@ export function ServicePage({ serviceKey }: { serviceKey: string }) {
         title={service.name}
         description={service.intro}
         breadcrumb={[{ href: "/services", label: "Services" }, { label: service.name }]}
+        image={service.image}
       >
         <Button asChild size="lg" className="h-12 px-6">
           <Link href="/quote">Demander un devis <ArrowRight className="ml-1 h-4 w-4" /></Link>

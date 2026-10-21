@@ -39,7 +39,17 @@ export const stats = [
 
 // Réseaux sociaux : ajouter les liens réels ici (ils s'affichent automatiquement dans le footer).
 // Exemple : { label: "Facebook", href: "https://facebook.com/inovamakers" }
-export const socialLinks: { label: string; href: string }[] = []
+export const socialLinks: { label: string; href: string }[] = [
+  { label: "TikTok", href: "https://www.tiktok.com/@guyzmaker" },
+]
+
+// Photos du site (dossier public/images/). Pour utiliser vos propres photos,
+// remplacez simplement le fichier par un autre portant le même nom.
+// Photos actuelles : banque d'images libre de droits Unsplash (licence Unsplash).
+export const images = {
+  hero: { src: "/images/hero.jpg", alt: "Technicien intervenant sur une installation électrique" },
+  about: { src: "/images/a-propos.jpg", alt: "Équipe d'ingénierie au travail" },
+}
 
 export type Offering = { icon: LucideIcon; title: string; description: string }
 
@@ -49,6 +59,8 @@ export type Service = {
   /** Slug du service en base (GET /api/services/:slug), si le service existe dans l'admin */
   apiSlug?: string
   icon: LucideIcon
+  /** Photo de la page du service (public/images/) */
+  image: string
   name: string
   tagline: string
   summary: string
@@ -64,6 +76,7 @@ export const services: Service[] = [
     href: "/display",
     apiSlug: "display",
     icon: Monitor,
+    image: "/images/service-affichage-led.jpg",
     name: "Affichage LED",
     tagline: "Écrans LED et affichage dynamique",
     summary: "Écrans LED intérieurs et extérieurs, enseignes dynamiques et horloges numériques.",
@@ -87,6 +100,7 @@ export const services: Service[] = [
     key: "solar",
     href: "/solaire",
     icon: Sun,
+    image: "/images/service-solaire.jpg",
     name: "Énergie solaire",
     tagline: "Installations photovoltaïques et stockage",
     summary: "Kits et installations solaires, stockage par batteries et suivi de production.",
@@ -111,6 +125,7 @@ export const services: Service[] = [
     href: "/domotics",
     apiSlug: "domotics-service",
     icon: Home,
+    image: "/images/service-domotique.jpg",
     name: "Domotique",
     tagline: "Bâtiments intelligents et sécurisés",
     summary: "Éclairage, climatisation, sécurité et contrôle d'accès pilotés depuis votre téléphone.",
@@ -135,6 +150,7 @@ export const services: Service[] = [
     href: "/engineering",
     apiSlug: "engineering",
     icon: Cpu,
+    image: "/images/service-ingenierie-iot.jpg",
     name: "Ingénierie & IoT",
     tagline: "Objets connectés et prototypes sur mesure",
     summary: "Conseil, conception d'objets connectés, prototypage et automatisation.",

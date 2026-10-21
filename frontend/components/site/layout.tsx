@@ -53,17 +53,25 @@ export function SectionHeading({
 
 /** En-tête des pages intérieures : bandeau sombre, fil d'Ariane, titre et introduction. */
 export function PageHero({
-  eyebrow, title, description, breadcrumb, children,
+  eyebrow, title, description, breadcrumb, image, children,
 }: {
   eyebrow?: string
   title: string
   description?: string
   breadcrumb?: { href?: string; label: string }[]
+  /** Photo de fond optionnelle (assombrie pour garder le texte lisible) */
+  image?: string
   children?: React.ReactNode
 }) {
   return (
-    <section className="bg-ink pt-32 pb-16 text-white lg:pt-40 lg:pb-20">
-      <Container>
+    <section className={cn("relative overflow-hidden bg-ink pt-32 pb-16 text-white lg:pt-40 lg:pb-20", image && "lg:pb-28")}>
+      {image && (
+        <>
+          <img src={image} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
+          <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-ink via-ink/85 to-ink/40" />
+        </>
+      )}
+      <Container className="relative">
         {breadcrumb && (
           <nav aria-label="Fil d'Ariane" className="mb-8 flex flex-wrap items-center gap-2 text-sm text-white/60">
             <Link href="/" className="hover:text-white">Accueil</Link>

@@ -64,6 +64,8 @@ export function Navigation() {
 
         {/* Desktop */}
         <div className="hidden items-center gap-1 lg:flex">
+          <Link href="/" className={linkClass(normalized === "/")}>Accueil</Link>
+
           <div className="relative" ref={servicesRef}>
             <button
               type="button"
@@ -136,7 +138,8 @@ export function Navigation() {
       {mobileOpen && (
         <div className="max-h-[calc(100vh-72px)] overflow-y-auto border-t border-border bg-white lg:hidden">
           <div className="space-y-6 px-6 py-6">
-            <div>
+            <Link href="/" className="block rounded-lg font-medium text-foreground">Accueil</Link>
+            <div className="border-t border-border pt-4">
               <p className="mb-2 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Services</p>
               <div className="space-y-1">
                 {services.map((s) => (
