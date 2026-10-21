@@ -34,7 +34,22 @@ app.set('trust proxy', Number(process.env.TRUST_PROXY ?? 1))
 
 // Sécurité
 app.use(helmet())
-app.use(cors({ origin: process.env.CORS_ORIGIN }))
+// CORS_ORIGIN accepte plusieurs origines séparées par des virgules.
+// La version www et sans www d'un domaine sont toujours autorisées ensemble.
+const allowedOrigins = new Set(
+  (process.env.CORS_ORIGIN || '')
+    .split(',')
+    .map((o) => o.trim().replace(/\/$/, ''))
+    .filter(Boolean)
+    .flatMap((o) => {
+      const u = new URL(o)
+      const bare = u.host.replace(/^www\./, '') // host conserve le port (localhost:3000)
+      return [`${u.protocol}//${bare}`, `${u.protocol}//www.${bare}`]
+    })
+)
+app.use(cors({
+  origin: (origin, cb) => cb(null, !origin || allowedOrigins.has(origin)),
+}))
 
 // Rate limiting
 app.use(rateLimit({

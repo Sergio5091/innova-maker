@@ -2,6 +2,7 @@
 // AVANT d'atteindre MySQL (auth, validation Zod, 404). Lancer avec : npm test
 process.env.JWT_SECRET = 'test-secret'
 process.env.NODE_ENV = 'test'
+process.env.CORS_ORIGIN = 'https://inovamakers.io, http://localhost:3000'
 
 const { test, before, after } = require('node:test')
 const assert = require('node:assert')
@@ -105,4 +106,23 @@ test('PATCH /admin/quotes avec statut inconnu → 400', async () => {
 test('PUT /admin/categories avec type inconnu → 400', async () => {
   const { status } = await call('PUT', '/admin/categories/1', { token: adminToken, body: { type: 'autre' } })
   assert.strictEqual(status, 400)
+})
+
+async function corsFor(origin) {
+  const res = await fetch(`${baseUrl}/health`, { headers: { Origin: origin } })
+  return res.headers.get('access-control-allow-origin')
+}
+
+test('CORS : domaine avec et sans www autorisés', async () => {
+  assert.strictEqual(await corsFor('https://inovamakers.io'), 'https://inovamakers.io')
+  assert.strictEqual(await corsFor('https://www.inovamakers.io'), 'https://www.inovamakers.io')
+})
+
+test('CORS : port conservé (localhost:3000)', async () => {
+  assert.strictEqual(await corsFor('http://localhost:3000'), 'http://localhost:3000')
+  assert.strictEqual(await corsFor('http://localhost:4000'), null)
+})
+
+test('CORS : origine inconnue refusée', async () => {
+  assert.strictEqual(await corsFor('https://site-pirate.com'), null)
 })
