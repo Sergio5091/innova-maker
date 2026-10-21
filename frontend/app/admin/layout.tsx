@@ -23,7 +23,8 @@ const navItems = [
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
-  const pathname = usePathname()
+  // trailingSlash (export statique) : "/admin/login/" → "/admin/login" pour les comparaisons
+  const pathname = usePathname().replace(/\/$/, "") || "/"
   const [admin, setAdmin] = useState<any>(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
 

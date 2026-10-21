@@ -1,11 +1,15 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { motion } from "framer-motion"
-import { Lock, Mail, Eye, EyeOff, Loader2 } from "lucide-react"
+import { ArrowLeft, Eye, EyeOff, Loader2, Lock, Mail, ShieldCheck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { api } from "@/lib/api"
+import { images } from "@/lib/site"
+
+const inputClass =
+  "w-full rounded-lg border border-input bg-white py-3 pl-11 pr-4 text-[15px] text-foreground placeholder:text-muted-foreground/60 transition-colors focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10"
 
 export default function AdminLoginPage() {
   const router = useRouter()
@@ -13,6 +17,11 @@ export default function AdminLoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+
+  // Déjà connecté : direction le dashboard
+  useEffect(() => {
+    if (localStorage.getItem("admin_token")) router.replace("/admin")
+  }, [router])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -25,110 +34,114 @@ export default function AdminLoginPage() {
       router.push("/admin")
     } catch (err: any) {
       setError(err.message || "Identifiants incorrects")
-    } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center relative overflow-hidden">
-      {/* Background grid */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#0A4DFF08_1px,transparent_1px),linear-gradient(to_bottom,#0A4DFF08_1px,transparent_1px)] bg-[size:64px_64px]" />
-      <motion.div
-        animate={{ scale: [1, 1.2, 1], opacity: [0.15, 0.25, 0.15] }}
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-1/4 -right-32 w-96 h-96 bg-primary/20 rounded-full blur-3xl"
-      />
-      <motion.div
-        animate={{ scale: [1.2, 1, 1.2], opacity: [0.1, 0.2, 0.1] }}
-        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute bottom-1/4 -left-32 w-96 h-96 bg-primary/10 rounded-full blur-3xl"
-      />
+    <div className="grid min-h-screen bg-white lg:grid-cols-2">
+      {/* Panneau visuel */}
+      <aside className="relative hidden overflow-hidden bg-ink lg:flex lg:flex-col lg:justify-between lg:p-12">
+        <img src={images.hero.src} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover opacity-40" />
+        <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-ink via-ink/70 to-ink/30" />
 
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="relative w-full max-w-md px-6"
-      >
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <img src="/logoINOVAMakers.svg" alt="INOVA Makers" className="h-12 w-auto mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-foreground">Espace Administration</h1>
-          <p className="text-muted-foreground text-sm mt-1">Connectez-vous pour accéder au dashboard</p>
+        <Link href="/" className="relative" aria-label="INOVA Makers — Accueil">
+          <img src="/logoINOVAMakers-blanc.svg" alt="INOVA Makers" className="h-10 w-auto" />
+        </Link>
+
+        <div className="relative max-w-md text-white">
+          <p className="text-sm font-semibold uppercase tracking-[0.12em] text-[#5c9dff]">Espace administration</p>
+          <h1 className="mt-4 text-4xl font-semibold leading-tight tracking-tight text-balance">
+            Gérez votre site, vos demandes et votre catalogue.
+          </h1>
+          <ul className="mt-8 space-y-3 text-white/75">
+            <li>Demandes de contact et de devis</li>
+            <li>Produits, articles et services</li>
+            <li>Abonnés à la newsletter</li>
+          </ul>
         </div>
 
-        {/* Card */}
-        <div className="bg-background border border-border rounded-2xl p-8 shadow-xl">
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Email */}
+        <p className="relative text-sm text-white/50">© {new Date().getFullYear()} INOVA Makers</p>
+      </aside>
+
+      {/* Formulaire */}
+      <main className="flex flex-col px-6 py-8 sm:px-12">
+        <div className="flex items-center justify-between">
+          <Link href="/" className="lg:hidden" aria-label="INOVA Makers — Accueil">
+            <img src="/logoINOVAMakers.svg" alt="INOVA Makers" className="h-8 w-auto" />
+          </Link>
+          <Link href="/" className="ml-auto inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground">
+            <ArrowLeft className="h-4 w-4" /> Retour au site
+          </Link>
+        </div>
+
+        <div className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center py-12">
+          <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <ShieldCheck className="h-6 w-6" />
+          </span>
+          <h2 className="mt-6 text-3xl font-semibold tracking-tight text-foreground">Connexion</h2>
+          <p className="mt-2 text-muted-foreground">Accès réservé à l'équipe INOVA Makers.</p>
+
+          <form onSubmit={handleSubmit} className="mt-10 space-y-5">
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">Email</label>
+              <label htmlFor="email" className="mb-2 block text-sm font-medium text-foreground">Adresse email</label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <input
+                  id="email"
                   type="email"
                   required
+                  autoComplete="username"
+                  autoFocus
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  placeholder="admin@inovamakers.io"
-                  className="w-full pl-10 pr-4 py-3 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                  placeholder="vous@inovamakers.io"
+                  className={inputClass}
                 />
               </div>
             </div>
 
-            {/* Password */}
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">Mot de passe</label>
+              <label htmlFor="password" className="mb-2 block text-sm font-medium text-foreground">Mot de passe</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Lock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <input
+                  id="password"
                   type={showPassword ? "text" : "password"}
                   required
+                  autoComplete="current-password"
                   value={form.password}
                   onChange={(e) => setForm({ ...form, password: e.target.value })}
                   placeholder="••••••••"
-                  className="w-full pl-10 pr-12 py-3 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                  className={`${inputClass} pr-12`}
                 />
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  onClick={() => setShowPassword((v) => !v)}
+                  aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-muted-foreground hover:text-foreground"
                 >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
             </div>
 
-            {/* Error */}
             {error && (
-              <motion.div
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="px-4 py-3 bg-destructive/10 border border-destructive/20 rounded-lg text-sm text-destructive"
-              >
+              <p role="alert" className="rounded-lg border border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive">
                 {error}
-              </motion.div>
+              </p>
             )}
 
-            <Button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground h-12"
-            >
-              {loading ? (
-                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Connexion...</>
-              ) : (
-                "Se connecter"
-              )}
+            <Button type="submit" disabled={loading} className="h-12 w-full text-[15px]">
+              {loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Connexion...</> : "Se connecter"}
             </Button>
           </form>
-        </div>
 
-        <p className="text-center text-xs text-muted-foreground mt-6">
-          © {new Date().getFullYear()} INOVA Makers — Accès restreint
-        </p>
-      </motion.div>
+          <p className="mt-8 text-sm text-muted-foreground">
+            Mot de passe oublié ? Contactez l'administrateur du site.
+          </p>
+        </div>
+      </main>
     </div>
   )
 }
